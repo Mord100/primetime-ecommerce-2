@@ -1,22 +1,18 @@
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 import {
     USER_LOGIN_REQ,
     USER_LOGIN_REQ_FAIL,
     USER_LOGIN_REQ_SUCCESS,
-
     USER_LOGOUT,
     USER_REGISTER_REQ,
     USER_REGISTER_REQ_FAIL,
     USER_REGISTER_REQ_SUCCESS,
-
-
 } from "../Constants/User"
 import { BASE_URL } from "../Constants/BASE_URL";
 
-
 //user login action 
-
 export const userLoginAction = (email, password) => async (dispatch)=>{
     try {
         dispatch({ type: USER_LOGIN_REQ })
@@ -30,7 +26,6 @@ export const userLoginAction = (email, password) => async (dispatch)=>{
         dispatch({ type: USER_LOGIN_REQ_SUCCESS, payload: data });
         localStorage.setItem("userInfo", JSON.stringify(data))
 
-
     } catch (error) {
         dispatch({
             type: USER_LOGIN_REQ_FAIL,
@@ -39,14 +34,13 @@ export const userLoginAction = (email, password) => async (dispatch)=>{
     }
 }
 
-
 //user logout action 
-export const userLogoutAction = () => async (dispatch) => {
+export const userLogoutAction = () => (dispatch) => {
     localStorage.removeItem("userInfo");
-    dispatch({ type: USER_LOGOUT })
-    document.location.href = "/login"
+    dispatch({ type: USER_LOGOUT });
+    const navigate = useNavigate();
+    navigate('/login');
 };
-
 
 //register 
 export const userRegisterAction = (name, email, password) => async (dispatch) => {
@@ -58,13 +52,11 @@ export const userRegisterAction = (name, email, password) => async (dispatch) =>
             }
         }
 
-
         const { data } = await axios.post(`${BASE_URL}/api/users`, { name, email, password }, config);
 
         dispatch({ type: USER_REGISTER_REQ_SUCCESS, payload: data });
         dispatch({ type: USER_LOGIN_REQ_SUCCESS, payload: data });
         localStorage.setItem("userInfo", JSON.stringify(data))
-
 
      } catch (error) {
         dispatch({

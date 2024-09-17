@@ -56,7 +56,7 @@ function ProductDetail() {
           <div className="flex items-center justify-center h-screen">
             <p className="text-red-500">{error}</p>
           </div>
-        ) : (
+        ) : product ? (
           <div className="container mx-auto px-4 py-8 max-w-6xl">
             <div className="flex flex-col lg:flex-row gap-12">
               <div className="lg:w-2/3">
@@ -68,7 +68,9 @@ function ProductDetail() {
               </div>
               <div className="lg:w-1/3 space-y-6">
                 <h1 className="text-3xl font-semibold text-gray-900">{product.name}</h1>
-                <p className="text-2xl font-medium text-gray-700">MWK {product.price.toFixed(2)}</p>
+                <p className="text-2xl font-medium text-gray-700">
+                  MWK {product.price ? product.price.toFixed(2) : 'N/A'}
+                </p>
                 <p className="text-gray-600 text-lg">{product.description}</p>
                 
                 {product.countInStock > 0 ? (
@@ -118,6 +120,10 @@ function ProductDetail() {
                 )}
               </div>
             </div>
+          </div>
+        ) : (
+          <div className="flex items-center justify-center h-screen">
+            <p>No product data available.</p>
           </div>
         )}
 
