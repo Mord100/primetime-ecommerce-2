@@ -11,12 +11,15 @@ const TestDriveModal = ({ isOpen, onClose }) => {
     date: '',
   });
 
+  const [loading, setLoading] = useState(false); // Added loading state
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       await emailjs.send(
         'service_f4git3o',
@@ -24,11 +27,17 @@ const TestDriveModal = ({ isOpen, onClose }) => {
         formData,
         'zRi-RVhp9dKKyThly'
       );
-      toast.success('Test drive request sent successfully!');
+      try {
+        toast.success('Test drive request sent successfully!', { autoClose: 3000 });
+      } catch (error) {
+        console.error('Error displaying toast message:', error);
+      }
       onClose();
     } catch (error) {
       console.error('Error sending test drive request:', error);
       toast.error('Failed to send test drive request. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -85,11 +94,13 @@ const TestDriveModal = ({ isOpen, onClose }) => {
           </div>
           <div className="flex justify-end space-x-2 pt-4">
             <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500">Cancel</button>
-            <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500">Submit</button>
+            <button type="submit" disabled={loading} className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500">
+              {loading ? 'Sending...' : 'Submit'}
+            </button>
           </div>
         </form>
       </div>
-      <ToastContainer position="bottom-right" />
+      <ToastContainer position="top-right" />
     </div>
   );
 };

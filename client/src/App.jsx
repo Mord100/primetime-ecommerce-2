@@ -15,6 +15,7 @@ import PlaceOrder from "./pages/PlaceOrder";
 import OrderConfirmation from "./pages/OrderConfirm";
 import { OrderHistory } from "./pages/OrderHistory";
 
+
 function App() {
 
   const userLoginReducer = useSelector((state) => state.userLoginReducer)
@@ -42,6 +43,7 @@ function App() {
           <Route exact path="/placeorder" element={<PlaceOrder />}></Route>
         </Routes>
       </Router>
+
     </>
   );
 }
