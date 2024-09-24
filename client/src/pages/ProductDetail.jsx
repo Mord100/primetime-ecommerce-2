@@ -10,6 +10,7 @@ import ContractPurchaseModal from "../components/ContractPurchaseModal";
 import { toast } from "react-toastify";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import RelatedProducts from "../components/RelatedProducts";
 
 function ProductDetail() {
   const { id } = useParams();
@@ -134,8 +135,10 @@ function ProductDetail() {
         {showContractPurchaseModal && (
           <ContractPurchaseModal isOpen={showContractPurchaseModal} onClose={closeContractPurchaseModal} />
         )}
+      <RelatedProducts/>
       </Layout>
       <ToastContainer position="top-right" autoClose={3000} />
+
     </>
   );
 }
