@@ -1,32 +1,68 @@
-import { FaTwitter, FaFacebookF, FaInstagram } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import React from 'react'
+import { Link } from 'react-router-dom'
+import { FaTwitter, FaFacebookF, FaInstagram } from 'react-icons/fa'
+
+const FooterLink = ({ to, children }) => (
+  <Link
+    to={to}
+    className="text-sm text-gray-600 hover:text-gray-800 transition-colors duration-300 hover:underline"
+  >
+    {children}
+  </Link>
+)
+
+const SocialIcon = ({ Icon, href }) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="text-gray-400 hover:text-gray-600 transition-colors duration-300 transform hover:scale-110"
+  >
+    <Icon size={20} />
+  </a>
+)
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear()
 
   return (
     <footer className="bg-white text-gray-600 border-t border-gray-200">
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-6 md:space-y-0">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-800">PRIMETIME LIMITED</h2>
-            <p className="mt-2 text-sm">Quality e-commerce solutions</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold text-gray-800">PRIMETIME LIMITED</h2>
+            <p className="text-sm text-gray-600">Quality e-commerce solutions</p>
+            <div className="flex space-x-4">
+              <SocialIcon Icon={FaTwitter} href="https://twitter.com" />
+              <SocialIcon Icon={FaFacebookF} href="https://facebook.com" />
+              <SocialIcon Icon={FaInstagram} href="https://instagram.com" />
+            </div>
           </div>
 
-          <nav className="flex flex-wrap justify-center gap-x-8 gap-y-4">
-            {['About', 'Products', 'Contact', 'Terms', 'Privacy'].map((item) => (
-              <Link key={item} to="#" className="text-sm hover:text-gray-800 transition-colors">
-                {item}
-              </Link>
-            ))}
+          <nav className="grid grid-cols-2 gap-4">
+            <FooterLink to="/about">About</FooterLink>
+            <FooterLink to="/products">Products</FooterLink>
+            <FooterLink to="/contact">Contact</FooterLink>
+            <FooterLink to="/terms">Terms</FooterLink>
+            <FooterLink to="/privacy">Privacy</FooterLink>
           </nav>
 
-          <div className="flex space-x-4">
-            {[FaTwitter, FaFacebookF, FaInstagram].map((Icon, index) => (
-              <a key={index} href="#" className="text-gray-400 hover:text-gray-600 transition-colors">
-                <Icon size={18} />
-              </a>
-            ))}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-800">Newsletter</h3>
+            <p className="text-sm text-gray-600">Stay updated with our latest offers</p>
+            <form className="flex">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="flex-grow px-4 py-2 text-sm border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button
+                type="submit"
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-r-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              >
+                Subscribe
+              </button>
+            </form>
           </div>
         </div>
 
@@ -35,7 +71,7 @@ const Footer = () => {
         </div>
       </div>
     </footer>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer
