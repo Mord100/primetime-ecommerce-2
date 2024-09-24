@@ -43,7 +43,7 @@ function ProductDetail() {
       <Layout>
         <div className="flex items-center justify-center h-screen">
           <motion.div
-            className="w-16 h-16 border-4 border-blue-500 rounded-full border-t-transparent"
+            className="w-16 h-16 border-4 border-blue-500 rounded-lg border-t-transparent"
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
           />
@@ -93,9 +93,7 @@ function ProductDetail() {
                 alt={product.name}
                 className="w-full h-[600px] object-cover transition-transform duration-300 hover:scale-105"
               />
-              <div className="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md">
-                <FiHeart className="w-6 h-6 text-red-500" />
-              </div>
+            
             </div>
           </motion.div>
           <motion.div
@@ -105,34 +103,34 @@ function ProductDetail() {
             transition={{ delay: 0.4 }}
           >
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">{product.name}</h1>
+              <h1 className="text-4xl font-bold text-gray-900  mb-2">{product.name}</h1>
               <p className="text-lg text-gray-600">{product.brand}</p>
             </div>
-            <p className="text-5xl font-semibold text-blue-600">
+            <p className="text-4xl font-semibold text-[#f24c1c]">
               MWK {product.price ? product.price.toFixed(2) : 'N/A'}
             </p>
             <p className="text-gray-700 text-lg leading-relaxed">{product.description}</p>
             
             {product.countInStock > 0 ? (
               <div className="space-y-6">
-                <div className="flex items-center space-x-4 bg-gray-100 rounded-full p-2 w-max">
+                <div className="flex items-center space-x-4 bg-gray-100 rounded-lg p-2 w-max">
                   <button
                     onClick={() => setQty(Math.max(1, qty - 1))}
-                    className="p-2 rounded-full bg-white shadow-md hover:bg-gray-200 transition-colors"
+                    className="p-2 rounded-lg bg-white shadow-md hover:bg-gray-200 transition-colors"
                   >
                     <FiMinus className="w-6 h-6" />
                   </button>
                   <span className="font-medium text-2xl w-12 text-center">{qty}</span>
                   <button
                     onClick={() => setQty(Math.min(product.countInStock, qty + 1))}
-                    className="p-2 rounded-full bg-white shadow-md hover:bg-gray-200 transition-colors"
+                    className="p-2 rounded-lg bg-white shadow-md hover:bg-gray-200 transition-colors"
                   >
                     <FiPlus className="w-6 h-6" />
                   </button>
                 </div>
                 <button
                   onClick={addToCartHandler}
-                  className="w-full py-4 px-6 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2 text-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                  className="w-full py-4 px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2 text-xl font-semibold shadow-lg hover:shadow-xl transform"
                 >
                   <FiShoppingCart className="w-6 h-6" />
                   <span>Add to Cart</span>
@@ -146,21 +144,21 @@ function ProductDetail() {
               <div className="space-y-4 pt-4">
                 <button 
                   onClick={openTestDriveModal}
-                  className="w-full py-3 px-4 border-2 border-gray-300 rounded-full hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2 text-lg font-medium hover:shadow-md"
+                  className="w-full py-3 px-4 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2 text-lg font-medium hover:shadow-md"
                 >
                   <IoCarSportOutline className="w-6 h-6" />
                   <span>Request a Test Drive</span>
                 </button>
                 <button 
                   onClick={openContractPurchaseModal}
-                  className="w-full py-3 px-4 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors flex items-center justify-center space-x-2 text-lg font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                  className="w-full py-3 px-4 bg-[#00315a] text-white rounded-lg hover:bg-opacity-90 transition-colors flex items-center justify-center space-x-2 text-lg font-medium shadow-lg hover:shadow-xl"
                 >
                   <BsFileEarmarkText className="w-6 h-6" />
                   <span>Contract Purchase</span>
                 </button>
               </div>
             )}
-
+{/* 
             <div className="pt-6 border-t border-gray-200">
               <h3 className="text-xl font-semibold mb-4">Product Details</h3>
               <ul className="space-y-2">
@@ -173,7 +171,7 @@ function ProductDetail() {
                   <span>Satisfaction guaranteed or your money back</span>
                 </li>
               </ul>
-            </div>
+            </div> */}
           </motion.div>
         </div>
       </motion.div>

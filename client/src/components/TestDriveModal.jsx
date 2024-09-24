@@ -28,7 +28,7 @@ const TestDriveModal = ({ isOpen, onClose }) => {
         'zRi-RVhp9dKKyThly'
       );
       try {
-        toast.success('Test drive request sent successfully!', { autoClose: 3000 });
+        toast.success('Test drive request sent successfully!');
       } catch (error) {
         console.error('Error displaying toast message:', error);
       }
@@ -100,7 +100,7 @@ const TestDriveModal = ({ isOpen, onClose }) => {
           </div>
         </form>
       </div>
-      <ToastContainer position="top-right" />
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };

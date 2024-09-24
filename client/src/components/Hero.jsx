@@ -71,7 +71,7 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5 }}
-            className="text-4xl font-bold text-white sm:text-5xl lg:text-6xl"
+            className="text-4xl font-semibold text-white font-bebas sm:text-5xl lg:text-6xl"
           >
             {slides[currentSlide].title}
           </motion.h2>
@@ -109,7 +109,7 @@ const Hero = () => {
         ))}
       </div>
 
-      <button
+      {/* <button
         onClick={prevSlide}
         className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-[#00315a] bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-colors"
       >
@@ -120,7 +120,7 @@ const Hero = () => {
         className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-[#00315a] bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-colors"
       >
         <ChevronRightIcon size={24} />
-      </button>
+      </button> */}
     </section>
   )
 }

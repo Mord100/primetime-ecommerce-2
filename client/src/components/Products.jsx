@@ -58,12 +58,12 @@ const Products = () => {
         <section className="py-12 px-4 md:px-12 font-sans">
           <div className="container mx-auto max-w-7xl">
             <div className="flex w-full border-b mb-5 pb-5 items-center justify-between">            
-              <h1 className="text-5xl font-bold text-center text-gray-900">Our Products</h1>
+              <h1 className="md:text-5xl text-2xl font-bold text-gray-900">Our Products</h1>
               <div className="relative w-full max-w-md ">
                 <input
                   type="text"
                   placeholder="Search products" 
-                  className="w-full p-4 pl-12 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 text-gray-700"
+                  className="w-full p-4 pl-12 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 transition duration-300 text-gray-700"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
