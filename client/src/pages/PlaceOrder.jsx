@@ -1,78 +1,79 @@
-import { useDispatch, useSelector } from "react-redux";
-import Layout from "../Layouts/Layouts";
-import CartItem from "../components/CartItem";
-import { useEffect, useState } from "react";
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-import axios from "axios";
-import { BASE_URL } from "../Redux/Constants/BASE_URL";
-import { orderAction, orderPaymentAction } from "../Redux/Actions/Order";
-import { saveShippingAddressAction } from "../Redux/Actions/Cart";
-import { ORDER_RESET } from "../Redux/Constants/Order";
-import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux"
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { motion } from "framer-motion"
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
+import axios from "axios"
+import { FiTruck, FiCreditCard, FiShoppingBag } from "react-icons/fi"
+import Layout from "../Layouts/Layouts"
+import CartItem from "../components/CartItem"
+import { BASE_URL } from "../Redux/Constants/BASE_URL"
+import { orderAction, orderPaymentAction } from "../Redux/Actions/Order"
+import { saveShippingAddressAction } from "../Redux/Actions/Cart"
+import { ORDER_RESET } from "../Redux/Constants/Order"
 
 export default function PlaceOrder() {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const cart = useSelector((state) => state.cartReducer);
-  const { cartItems, shippingAddress } = cart;
-  const orderReducer = useSelector((state) => state.orderReducer);
-  const { order, success } = orderReducer;
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const cart = useSelector((state) => state.cartReducer)
+  const { cartItems, shippingAddress } = cart
+  const orderReducer = useSelector((state) => state.orderReducer)
+  const { order, success } = orderReducer
 
-  const [paymentResult, setPaymentResult] = useState({});
-  const [clientId, setClientId] = useState(null);
-  const [address, setAddress] = useState(shippingAddress.address || '');
-  const [city, setCity] = useState(shippingAddress.city || '');
-  const [postalCode, setPostalCode] = useState(shippingAddress.postalCode || '');
-  const [country, setCountry] = useState(shippingAddress.country || '');
+  const [paymentResult, setPaymentResult] = useState({})
+  const [clientId, setClientId] = useState(null)
+  const [address, setAddress] = useState(shippingAddress.address || '')
+  const [city, setCity] = useState(shippingAddress.city || '')
+  const [postalCode, setPostalCode] = useState(shippingAddress.postalCode || '')
+  const [country, setCountry] = useState(shippingAddress.country || '')
 
-  const addDecimal = (num) => (Math.round(num * 100) / 100).toFixed(2);
-  const subtotal = addDecimal(cartItems.reduce((total, item) => total + item.qty * item.price, 0));
-  const taxPrice = addDecimal(Number(0.15 * subtotal).toFixed(2));
-  const shippingPrice = addDecimal(subtotal > 100 ? 0 : 20);
-  const total = (Number(subtotal) + Number(taxPrice) + Number(shippingPrice)).toFixed(2);
+  const addDecimal = (num) => (Math.round(num * 100) / 100).toFixed(2)
+  const subtotal = addDecimal(cartItems.reduce((total, item) => total + item.qty * item.price, 0))
+  const taxPrice = addDecimal(Number(0.15 * subtotal).toFixed(2))
+  const shippingPrice = addDecimal(subtotal > 100 ? 0 : 20)
+  const total = (Number(subtotal) + Number(taxPrice) + Number(shippingPrice)).toFixed(2)
 
   useEffect(() => {
     const getPaypalClientID = async () => {
       try {
-        const { data } = await axios.get(`${BASE_URL}/api/config/paypal`);
-        setClientId(data);
+        const { data } = await axios.get(`${BASE_URL}/api/config/paypal`)
+        setClientId(data)
       } catch (error) {
-        console.error("Failed to fetch PayPal client ID:", error);
+        console.error("Failed to fetch PayPal client ID:", error)
       }
-    };
-
-    getPaypalClientID();
-
-    if (success) {
-      dispatch({ type: ORDER_RESET });
-      dispatch(orderPaymentAction(order._id, paymentResult));
-      navigate(`/order/${order._id}`);
     }
 
-    // Load Paychangu script
-    const script = document.createElement('script');
-    script.src = 'https://in.paychangu.com/js/popup.js';
-    script.async = true;
-    document.body.appendChild(script);
+    getPaypalClientID()
+
+    if (success) {
+      dispatch({ type: ORDER_RESET })
+      dispatch(orderPaymentAction(order._id, paymentResult))
+      navigate(`/order/${order._id}`)
+    }
+
+    const script = document.createElement('script')
+    script.src = 'https://in.paychangu.com/js/popup.js'
+    script.async = true
+    document.body.appendChild(script)
     
     script.onload = () => {
-      console.log("Paychangu script loaded successfully");
-    };
+      console.log("Paychangu script loaded successfully")
+    }
     
     script.onerror = () => {
-      console.log("Failed to load Paychangu script");
-    };
+      console.log("Failed to load Paychangu script")
+    }
 
     return () => {
       if (document.body.contains(script)) {
-        document.body.removeChild(script);
+        document.body.removeChild(script)
       }
-    };
-  }, [dispatch, success, order, paymentResult, navigate]);
+    }
+  }, [dispatch, success, order, paymentResult, navigate])
 
   const successPaymentHandler = async (details) => {
     try {
-      setPaymentResult(details);
+      setPaymentResult(details)
       dispatch(orderAction({
         orderItems: cart.cartItems,
         shippingAddress: cart.shippingAddress,
@@ -81,19 +82,18 @@ export default function PlaceOrder() {
         price: subtotal,
         taxPrice: taxPrice,
         shippingPrice: shippingPrice,
-      }));
+      }))
     } catch (err) {
-      console.error("Payment processing error:", err);
+      console.error("Payment processing error:", err)
     }
-  };
+  }
 
   const saveShippingAddress = () => {
-    dispatch(saveShippingAddressAction({ address, city, postalCode, country }));
-  };
+    dispatch(saveShippingAddressAction({ address, city, postalCode, country }))
+  }
 
   const handlePaychangu = async () => {
     try {
-      // Create the order first
       const createdOrder = await dispatch(orderAction({
         orderItems: cart.cartItems,
         shippingAddress: cart.shippingAddress,
@@ -102,7 +102,7 @@ export default function PlaceOrder() {
         price: subtotal,
         taxPrice: taxPrice,
         shippingPrice: shippingPrice,
-      }));
+      }))
 
       if (typeof window !== 'undefined' && window.PaychanguCheckout) {
         window.PaychanguCheckout({
@@ -125,23 +125,31 @@ export default function PlaceOrder() {
             "uuid": "uuid",
             "response": "Response"
           }
-        });
+        })
       } else {
-        console.error("PaychanguCheckout is not available");
+        console.error("PaychanguCheckout is not available")
       }
     } catch (error) {
-      console.error("Error creating order or initiating Paychangu checkout:", error);
+      console.error("Error creating order or initiating Paychangu checkout:", error)
     }
-  };
+  }
 
   return (
     <Layout>
-      <div className="bg-gray-100 min-h-screen py-12">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white shadow-xl rounded-lg overflow-hidden">
+      <div className="bg-gray-50 min-h-screen py-12">
+        <div className="container mx-auto px-4 sm:px-6 md:px-32">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="bg-white shadow-2xl rounded-lg overflow-hidden"
+          >
             <div className="md:flex">
               <div className="md:w-1/2 p-8">
-                <h2 className="text-3xl font-extrabold text-gray-900 mb-6">Order Summary</h2>
+                <h2 className="text-3xl font-extrabold text-gray-900 mb-6 flex items-center">
+                  <FiShoppingBag className="mr-2" />
+                  Order Summary
+                </h2>
                 <div className="space-y-4">
                   <CartItem cartItems={cartItems} />
                   <div className="border-t pt-4">
@@ -166,7 +174,10 @@ export default function PlaceOrder() {
               </div>
 
               <div className="md:w-1/2 bg-gray-50 p-8">
-                <h2 className="text-3xl font-extrabold text-gray-900 mb-6">Shipping Address</h2>
+                <h2 className="text-3xl font-extrabold text-gray-900 mb-6 flex items-center">
+                  <FiTruck className="mr-2" />
+                  Shipping Address
+                </h2>
                 <div className="space-y-4">
                   <div>
                     <label htmlFor="address" className="block text-sm font-medium text-gray-700">Address</label>
@@ -209,20 +220,28 @@ export default function PlaceOrder() {
                     />
                   </div>
                 </div>
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={saveShippingAddress}
-                  className="mt-6 w-full bg-indigo-600 border border-transparent rounded-md shadow-sm py-3 px-4 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="mt-6 w-full bg-indigo-600 border border-transparent rounded-md shadow-sm py-3 px-4 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
                 >
                   Save Address
-                </button>
+                </motion.button>
 
                 <div className="mt-8 space-y-4">
-                  <button
+                  <h2 className="text-2xl font-extrabold text-gray-900 mb-4 flex items-center">
+                    <FiCreditCard className="mr-2" />
+                    Payment Methods
+                  </h2>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={handlePaychangu}
-                    className="w-full bg-[#00b9fc] border border-transparent rounded-md shadow-sm py-3 px-4 text-base font-medium text-white hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                    className="w-full bg-[#00b9fc] border border-transparent rounded-md shadow-sm py-3 px-4 text-base font-medium text-white hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-150 ease-in-out"
                   >
                     Pay with Paychangu
-                  </button>
+                  </motion.button>
 
                   {clientId && (
                     <PayPalScriptProvider options={{ clientId: clientId }}>
@@ -237,10 +256,10 @@ export default function PlaceOrder() {
                                 },
                               },
                             ],
-                          });
+                          })
                         }}
                         onApprove={(data, actions) => {
-                          return actions.order.capture().then(successPaymentHandler);
+                          return actions.order.capture().then(successPaymentHandler)
                         }}
                         style={{ layout: "vertical" }}
                       />
@@ -249,9 +268,9 @@ export default function PlaceOrder() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </Layout>
-  );
+  )
 }

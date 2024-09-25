@@ -8,7 +8,7 @@ const Layout = ({children}) =>{
         <>
         <Navbar/>
         {/* <Hero/> */}
-        <main>{children}</main>
+        <main className="font-inter">{children}</main>
         <Footer/>
         </>
     )

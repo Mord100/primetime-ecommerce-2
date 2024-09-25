@@ -107,7 +107,7 @@ const Products = () => {
                   className="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 hover:shadow-xl"
                   variants={itemVariants}
                 >
-                  <Link to={`/products/${product._id}`} className="block">
+                  <a href={`/products/${product._id}`} className="block">
                     <div className="aspect-w-1 aspect-h-1 h-64">
                       <img
                         alt={`Image of ${product.name}`}
@@ -120,7 +120,7 @@ const Products = () => {
                       <p className="text-gray-600 text-sm mb-3">{product.brand}</p>
                       <span className="text-[#f24c1c] font-bold text-xl">MWK {product.price ? product.price.toFixed(2) : 'N/A'}</span>
                     </div>
-                  </Link>
+                  </a>
                 </motion.div>
               ))}
             </motion.div>

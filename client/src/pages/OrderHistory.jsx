@@ -1,169 +1,156 @@
-import { useEffect } from "react";
-import Layout from "../Layouts/Layouts";
-import { useDispatch, useSelector } from "react-redux";
-import { orderListAction } from "../Redux/Actions/Order";
-import moment from "moment";
-import { TbProgress } from "react-icons/tb";
+import { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { motion, AnimatePresence } from "framer-motion"
+import { FiPackage, FiCalendar, FiDollarSign, FiCheckCircle, FiXCircle, FiRefreshCw } from "react-icons/fi"
+import { TbProgress } from "react-icons/tb"
+import moment from "moment"
+import Layout from "../Layouts/Layouts"
+import { orderListAction } from "../Redux/Actions/Order"
+
 export function OrderHistory() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
+  const [orderType, setOrderType] = useState("All orders")
+  const [duration, setDuration] = useState("this week")
+
   useEffect(() => {
-    dispatch(orderListAction());
-  }, [dispatch]);
+    dispatch(orderListAction())
+  }, [dispatch])
 
-  const orderListReducer = useSelector((state) => state.orderListReducer);
-  const { orders, loading, error } = orderListReducer;
+  const orderListReducer = useSelector((state) => state.orderListReducer)
+  const { orders, loading, error } = orderListReducer
+
+  const filteredOrders = orders?.filter(order => {
+    if (orderType !== "All orders") {
+      // Add logic to filter by order type
+    }
+    if (duration !== "this week") {
+      // Add logic to filter by duration
+    }
+    return true
+  })
+
   return (
-    <>
-      <Layout>
-        {loading ? (
-        <h1 className="text-center p-10"><TbProgress size={20} className="flex w-full mx-auto" />Loading... </h1>
-      ) : (
-          <section className="bg-white py-8 antialiased md:py-16">
-            <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
-              <div className="mx-auto max-w-5xl">
-                <div className="gap-4 sm:flex sm:items-center sm:justify-between">
-                  <h2 className="text-xl font-semibold text-gray-900  sm:text-2xl">
-                    My orders
-                  </h2>
-
-                  <div className="mt-6 gap-4 space-y-4 sm:mt-0 sm:flex sm:items-center sm:justify-end sm:space-y-0">
-                    <div>
-                      <label
-                        htmlFor="order-type"
-                        className="sr-only mb-2 block text-sm font-medium text-gray-900 "
-                      >
-                        Select order type
-                      </label>
-                      <select
-                        id="order-type"
-                        className="block w-full min-w-[8rem] rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 "
-                      >
-                        <option selected>All orders</option>
-                        <option value="pre-order">Pre-order</option>
-                        <option value="transit">In transit</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="cancelled">Cancelled</option>
-                      </select>
-                    </div>
-
-                    <span className="inline-block text-gray-500 ">
-                      {" "}
-                      from{" "}
-                    </span>
-
-                    <div>
-                      <label
-                        htmlFor="duration"
-                        className="sr-only mb-2 block text-sm font-medium text-gray-900 "
-                      >
-                        Select duration
-                      </label>
-                      <select
-                        id="duration"
-                        className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 "
-                      >
-                        <option selected>this week</option>
-                        <option value="this month">this month</option>
-                        <option value="last 3 months">the last 3 months</option>
-                        <option value="lats 6 months">the last 6 months</option>
-                        <option value="this year">this year</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-6 flow-root sm:mt-8">
-                  <div className="divide-y divide-gray-200">
-                    {orders &&
-                      orders.map((order) => (
-                        <div
-                          key={order.id}
-                          className="flex flex-wrap items-center gap-y-4 py-6"
-                        >
-                          <dl className="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
-                            <dt className="text-base font-medium text-gray-500 ">
-                              Order ID:
-                            </dt>
-                            <dd className="mt-1.5 text-base font-semibold text-gray-900 ">
-                              <a href="#" className="hover:underline">
-                                #{order._id}
-                              </a>
-                            </dd>
-                          </dl>
-
-                          <dl className="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1 ml-10">
-                            <dt className="text-base font-medium text-gray-500  ">
-                              Date:
-                            </dt>
-                            <dd className="mt-1.5 text-base font-semibold text-gray-900 ">
-                              {moment(order.createdAt).format("MMM Do YY")}
-                            </dd>
-                          </dl>
-
-                          <dl className="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
-                            <dt className="text-base font-medium text-gray-500 ">
-                              Price:
-                            </dt>
-                            <dd className="mt-1.5 text-base font-semibold text-gray-900 ">
-                              MWK{order.totalPrice}
-                            </dd>
-                          </dl>
-
-                          <dl className="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
-                            <dt className="text-base font-medium text-gray-500 ">
-                              Status:
-                            </dt>
-                            <dd
-                              className={
-                                order.isPaid
-                                  ? `"me-2 mt-1.5 inline-flex items-center rounded  bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300"`
-                                  : `"me-2 mt-1.5 inline-flex items-center rounded  bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-300"`
-                              }
-                            >
-                              <svg
-                                className="me-1 h-3 w-3"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  stroke="currentColor"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M5 11.917 9.724 16.5 19 7.5"
-                                />
-                              </svg>
-                              {order.isPaid ? `Paid` : `Not Paid yet`}
-                            </dd>
-                          </dl>
-
-                          <div className="w-full grid sm:grid-cols-2 lg:flex lg:w-64 lg:items-center lg:justify-end gap-4">
-                            <button
-                              type="button"
-                              className="w-full rounded-lg bg-primary-700 px-3 py-2 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 lg:w-auto"
-                            >
-                              Order again
-                            </button>
-                            {/* <a
-                            href="#"
-                            className="w-full inline-flex justify-center rounded-lg  border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800  dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 lg:w-auto"
-                          >
-                            View details
-                          </a> */}
-                          </div>
-                        </div>
-                      ))}
-                  </div>
+    <Layout>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="bg-gray-50 min-h-screen py-8 sm:py-12"
+      >
+        <div className="mx-auto px-4 sm:px-6 lg:px-32">
+          <div className="mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+              <h1 className="text-3xl font-bold text-gray-900 mb-4 sm:mb-0">My Orders</h1>
+              <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                <select
+                  value={orderType}
+                  onChange={(e) => setOrderType(e.target.value)}
+                  className="block w-full sm:w-auto rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                >
+                  <option>All orders</option>
+                  <option value="pre-order">Pre-order</option>
+                  <option value="transit">In transit</option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+                <div className="flex items-center">
+                  <span className="text-gray-500 mr-2">from</span>
+                  <select
+                    value={duration}
+                    onChange={(e) => setDuration(e.target.value)}
+                    className="block w-full sm:w-auto rounded-md py-2 px-3 border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  >
+                    <option>this week</option>
+                    <option value="this month">this month</option>
+                    <option value="last 3 months">the last 3 months</option>
+                    <option value="last 6 months">the last 6 months</option>
+                    <option value="this year">this year</option>
+                  </select>
                 </div>
               </div>
             </div>
-          </section>
-        )}
-      </Layout>
-    </>
-  );
+
+            {loading ? (
+              <div className="flex items-center justify-center h-64">
+                <TbProgress size={40} className="animate-spin text-[#f24c1c]" />
+                <span className="ml-2 text-xl font-medium text-gray-700">Loading orders...</span>
+              </div>
+            ) : error ? (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <strong className="font-bold">Error!</strong>
+                <span className="block sm:inline"> {error}</span>
+              </div>
+            ) : (
+              <AnimatePresence>
+                {filteredOrders && filteredOrders.map((order) => (
+                  <motion.div
+                    key={order._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-white shadow-md rounded-lg mb-6 overflow-hidden"
+                  >
+                    <div className="p-6">
+                      <div className="flex flex-wrap -mx-4">
+                        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                          <div className="flex items-center">
+                            <FiPackage className="text-indigo-600 mr-2" size={20} />
+                            <div>
+                              <p className="text-sm text-gray-600">Order ID</p>
+                              <p className="font-semibold text-gray-900">#{order._id}</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                          <div className="flex items-center">
+                            <div>
+                              <p className="text-sm text-gray-600">Date</p>
+                              <p className="font-semibold text-gray-900">{moment(order.createdAt).format("MMM Do YY")}</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                          <div className="flex items-center">
+                            <div>
+                              <p className="text-sm text-gray-600">Total Price</p>
+                              <p className="font-semibold text-gray-900">MWK {order.totalPrice.toFixed(2)}</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                          <div className="flex items-center">
+                            {order.isPaid ? (
+                              <FiCheckCircle className="text-green-500 mr-2" size={20} />
+                            ) : (
+                              <FiXCircle className="text-red-500 mr-2" size={20} />
+                            )}
+                            <div>
+                              <p className="text-sm text-gray-600">Status</p>
+                              <p className={`font-semibold ${order.isPaid ? 'text-green-600' : 'text-red-600'}`}>
+                                {order.isPaid ? 'Paid' : 'Not Paid'}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-6 flex justify-end">
+                        <button
+                          type="button"
+                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                          <FiRefreshCw className="mr-2" size={16} />
+                          Order Again
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    </Layout>
+  )
 }

@@ -81,7 +81,7 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="mt-4 text-xl text-gray-200"
+            className="mt-4 text-lg text-gray-200"
           >
             {slides[currentSlide].description}
           </motion.p>

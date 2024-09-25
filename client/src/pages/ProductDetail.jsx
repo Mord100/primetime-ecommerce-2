@@ -30,7 +30,7 @@ function ProductDetail() {
 
   const addToCartHandler = () => {
     dispatch(addToCartAction(id, qty))
-    toast.success("Item added to cart successfully!")
+    toast.success("Item added to cart successfully!. Login to view cart")
   }
 
   const openTestDriveModal = () => setShowTestDriveModal(true)
@@ -106,7 +106,7 @@ function ProductDetail() {
               <h1 className="text-4xl font-bold text-gray-900  mb-2">{product.name}</h1>
               <p className="text-lg text-gray-600">{product.brand}</p>
             </div>
-            <p className="text-4xl font-semibold text-[#f24c1c]">
+            <p className="text-xl font-semibold text-[#f24c1c]">
               MWK {product.price ? product.price.toFixed(2) : 'N/A'}
             </p>
             <p className="text-gray-700 text-lg leading-relaxed">{product.description}</p>
@@ -130,10 +130,10 @@ function ProductDetail() {
                 </div>
                 <button
                   onClick={addToCartHandler}
-                  className="w-full py-4 px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2 text-xl font-semibold shadow-lg hover:shadow-xl transform"
+                  className="w-full py-4 px-6 bg-[#f24c1c] text-white rounded-lg hover:bg-opacity-90 transition-colors flex items-center justify-center space-x-2 text-xl font-semibold shadow-lg hover:shadow-xl transform"
                 >
                   <FiShoppingCart className="w-6 h-6" />
-                  <span>Add to Cart</span>
+                  <span>Buy Now</span>
                 </button>
               </div>
             ) : (
