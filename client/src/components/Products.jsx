@@ -5,6 +5,7 @@ import { productListAction } from "../Redux/Actions/Product"
 import { IoSearch } from "react-icons/io5"
 import { TbProgress } from "react-icons/tb"
 import { motion } from "framer-motion"
+import Select from 'react-select'
 
 const Products = () => {
   const dispatch = useDispatch()
@@ -14,6 +15,8 @@ const Products = () => {
   const [selectedBrand, setSelectedBrand] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All")
+  const [selectedCarBrand, setSelectedCarBrand] = useState("")
+  const [selectedCarYear, setSelectedCarYear] = useState("")
 
   useEffect(() => {
     dispatch(productListAction())
@@ -22,10 +25,14 @@ const Products = () => {
   const filteredProducts = products.filter((product) =>
     (selectedBrand ? product.brand === selectedBrand : true) &&
     (searchTerm ? product.name.toLowerCase().includes(searchTerm.toLowerCase()) : true) &&
-    (selectedCategory !== "All" ? product.category === selectedCategory : true)
+    (selectedCategory !== "All" ? product.category === selectedCategory : true) &&
+    (selectedCategory === "Cars" && selectedCarBrand ? product.carBrand === selectedCarBrand : true) &&
+    (selectedCategory === "Cars" && selectedCarYear ? product.yearOfMake === selectedCarYear : true)
   )
 
   const categories = ["All", "Cars", "Farm Commodities", "Electronics", "Stationery", "Real Estates"]
+  const carBrands = ["Toyota", "Honda", "Ford", "Nissan", "Volkswagen"]
+  const carYears = ["2020", "2019", "2018", "2017", "2016"]
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -44,6 +51,9 @@ const Products = () => {
       opacity: 1
     }
   }
+
+  const brandOptions = carBrands.map(brand => ({ value: brand, label: brand }))
+  const yearOptions = carYears.map(year => ({ value: year, label: year }))
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -93,6 +103,28 @@ const Products = () => {
                   ))}
                 </div>
               </div>
+              {selectedCategory === "Cars" && (
+                <div className="flex justify-between border-t pt-5 space-x-4">
+                  <div className="flex flex-col space-y-2">
+                    <h2 className="text-gray-900 font-light text-xl mb-2">Brand</h2>
+                    <Select
+                      options={brandOptions}
+                      value={brandOptions.find(brand => brand.value === selectedCarBrand)}
+                      onChange={option => setSelectedCarBrand(option.value)}
+                      className="w-64"
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-2">
+                    <h2 className="text-gray-900 font-light text-xl mb-2">Year of Make</h2>
+                    <Select
+                      options={yearOptions}
+                      value={yearOptions.find(year => year.value === selectedCarYear)}
+                      onChange={option => setSelectedCarYear(option.value)}
+                      className="w-64"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             <motion.div 
@@ -106,6 +138,7 @@ const Products = () => {
                   key={product._id} 
                   className="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 hover:shadow-xl"
                   variants={itemVariants}
+
                 >
                   <a href={`/products/${product._id}`} className="block">
                     <div className="aspect-w-1 aspect-h-1 h-64">
