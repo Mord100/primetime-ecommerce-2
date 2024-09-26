@@ -6,6 +6,8 @@ import { TbProgress } from "react-icons/tb"
 import moment from "moment"
 import Layout from "../Layouts/Layouts"
 import { orderListAction } from "../Redux/Actions/Order"
+import Select from 'react-select'
+
 
 export function OrderHistory() {
   const dispatch = useDispatch()
@@ -42,7 +44,7 @@ export function OrderHistory() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
               <h1 className="text-3xl font-bold text-gray-900 mb-4 sm:mb-0">My Orders</h1>
               <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                <select
+                <Select
                   value={orderType}
                   onChange={(e) => setOrderType(e.target.value)}
                   className="block w-full sm:w-auto rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -52,20 +54,19 @@ export function OrderHistory() {
                   <option value="transit">In transit</option>
                   <option value="confirmed">Confirmed</option>
                   <option value="cancelled">Cancelled</option>
-                </select>
+                </Select>
                 <div className="flex items-center">
                   <span className="text-gray-500 mr-2">from</span>
-                  <select
+                  <Select
                     value={duration}
                     onChange={(e) => setDuration(e.target.value)}
-                    className="block w-full sm:w-auto rounded-md py-2 px-3 border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   >
                     <option>this week</option>
                     <option value="this month">this month</option>
                     <option value="last 3 months">the last 3 months</option>
                     <option value="last 6 months">the last 6 months</option>
                     <option value="this year">this year</option>
-                  </select>
+                  </Select>
                 </div>
               </div>
             </div>

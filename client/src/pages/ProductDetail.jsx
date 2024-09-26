@@ -42,11 +42,8 @@ function ProductDetail() {
     return (
       <Layout>
         <div className="flex items-center justify-center h-screen">
-          <motion.div
-            className="w-16 h-16 border-4 border-blue-500 rounded-lg border-t-transparent"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          />
+          <TbProgress size={40} className="animate-spin mr-3 text-[#f24c1c]" />
+          <span className="text-xl font-semibold text-gray-700">Loading...</span>
         </div>
       </Layout>
     )
@@ -103,13 +100,13 @@ function ProductDetail() {
             transition={{ delay: 0.4 }}
           >
             <div>
-              <h1 className="text-4xl font-bold text-gray-900  mb-2">{product.name}</h1>
-              <p className="text-lg text-gray-600">{product.brand}</p>
+              <h1 className="text-4xl font-bold text-gray-900 ">{product.name}</h1>
+              <p className="text-lg text-gray-600">{product.brand} - {product.yearOfMake}</p>
             </div>
             <p className="text-xl font-semibold text-[#f24c1c]">
               MWK {product.price ? product.price.toFixed(2) : 'N/A'}
             </p>
-            <p className="text-gray-700 text-lg leading-relaxed">{product.description}</p>
+            <p className="text-gray-700 text-md leading-relaxed">{product.description}</p>
             
             {product.countInStock > 0 ? (
               <div className="space-y-6">
@@ -135,43 +132,28 @@ function ProductDetail() {
                   <FiShoppingCart className="w-6 h-6" />
                   <span>Buy Now</span>
                 </button>
+                {product.category === "Cars" && (
+                  <div className="space-y-4 pt-4">
+                    <button 
+                      onClick={openTestDriveModal}
+                      className="w-full py-3 px-4 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2 text-lg font-medium hover:shadow-md"
+                    >
+                      <IoCarSportOutline className="w-6 h-6" />
+                      <span>Request a Test Drive</span>
+                    </button>
+                    <button 
+                      onClick={openContractPurchaseModal}
+                      className="w-full py-3 px-4 bg-[#00315a] text-white rounded-lg hover:bg-opacity-90 transition-colors flex items-center justify-center space-x-2 text-lg font-medium shadow-lg hover:shadow-xl"
+                    >
+                      <BsFileEarmarkText className="w-6 h-6" />
+                      <span>Contract Purchase</span>
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <p className="text-red-500 text-xl font-medium bg-red-100 p-4 rounded-lg">Out of Stock</p>
             )}
-            
-            {product.category === "Cars" && (
-              <div className="space-y-4 pt-4">
-                <button 
-                  onClick={openTestDriveModal}
-                  className="w-full py-3 px-4 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2 text-lg font-medium hover:shadow-md"
-                >
-                  <IoCarSportOutline className="w-6 h-6" />
-                  <span>Request a Test Drive</span>
-                </button>
-                <button 
-                  onClick={openContractPurchaseModal}
-                  className="w-full py-3 px-4 bg-[#00315a] text-white rounded-lg hover:bg-opacity-90 transition-colors flex items-center justify-center space-x-2 text-lg font-medium shadow-lg hover:shadow-xl"
-                >
-                  <BsFileEarmarkText className="w-6 h-6" />
-                  <span>Contract Purchase</span>
-                </button>
-              </div>
-            )}
-{/* 
-            <div className="pt-6 border-t border-gray-200">
-              <h3 className="text-xl font-semibold mb-4">Product Details</h3>
-              <ul className="space-y-2">
-                <li className="flex items-center space-x-2 text-gray-700">
-                  <FiTruck className="w-5 h-5 text-blue-500" />
-                  <span>Free shipping on orders over MWK 50,000</span>
-                </li>
-                <li className="flex items-center space-x-2 text-gray-700">
-                  <FiHeart className="w-5 h-5 text-blue-500" />
-                  <span>Satisfaction guaranteed or your money back</span>
-                </li>
-              </ul>
-            </div> */}
           </motion.div>
         </div>
       </motion.div>

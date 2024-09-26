@@ -12,6 +12,8 @@ const prodcutSchema = new mongoose.Schema({
   image: { type: String, required: true },
   description: { type: String, required: true },
   category: { type: String, required: true },
+  brand: { type: String },
+  yearOfMake: { type: String },
   rating: { type: Number, required: true, default: 0 },
   numReview: { type: Number, required: true, default: 0 },
   price: { type: Number, required: true, default: 0 },

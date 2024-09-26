@@ -15,8 +15,8 @@ const Products = () => {
   const [selectedBrand, setSelectedBrand] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All")
-  const [selectedCarBrand, setSelectedCarBrand] = useState("")
-  const [selectedCarYear, setSelectedCarYear] = useState("")
+  const [selectedCarBrand, setSelectedCarBrand] = useState("All") // Change initial state to "All"
+  const [selectedCarYear, setSelectedCarYear] = useState("All") // Change initial state to "All"
 
   useEffect(() => {
     dispatch(productListAction())
@@ -26,13 +26,15 @@ const Products = () => {
     (selectedBrand ? product.brand === selectedBrand : true) &&
     (searchTerm ? product.name.toLowerCase().includes(searchTerm.toLowerCase()) : true) &&
     (selectedCategory !== "All" ? product.category === selectedCategory : true) &&
-    (selectedCategory === "Cars" && selectedCarBrand ? product.carBrand === selectedCarBrand : true) &&
-    (selectedCategory === "Cars" && selectedCarYear ? product.yearOfMake === selectedCarYear : true)
+    (selectedCategory === "Cars" && selectedCarBrand !== "All" ? product.brand === selectedCarBrand : true) && // Update condition for brand
+    (selectedCategory === "Cars" && selectedCarYear !== "All" ? product.yearOfMake === selectedCarYear : true) // Update condition for year
   )
 
   const categories = ["All", "Cars", "Farm Commodities", "Electronics", "Stationery", "Real Estates"]
-  const carBrands = ["Toyota", "Honda", "Ford", "Nissan", "Volkswagen"]
-  const carYears = ["2020", "2019", "2018", "2017", "2016"]
+
+  // Extract unique brands and years from the products
+  const carBrands = [...new Set(products.filter(product => product.category === "Cars").map(product => product.brand))] // Map all car brands
+  const carYears = [...new Set(products.filter(product => product.category === "Cars").map(product => product.yearOfMake))] // Map all car years
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -52,8 +54,8 @@ const Products = () => {
     }
   }
 
-  const brandOptions = carBrands.map(brand => ({ value: brand, label: brand }))
-  const yearOptions = carYears.map(year => ({ value: year, label: year }))
+  const brandOptions = [{ value: "All", label: "All" }, ...carBrands.map(brand => ({ value: brand, label: brand }))] // Add "All" option
+  const yearOptions = [{ value: "All", label: "All" }, ...carYears.map(year => ({ value: year, label: year }))] // Add "All" option
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -81,10 +83,7 @@ const Products = () => {
               </div>
             </div>
 
-
             <div className="mb-10 space-y-6">
-              
-
               <div>
                 <h2 className="text-gray-900 font-bold text-2xl mb-4 text-center">Categories</h2>
                 <div className="flex flex-wrap justify-center gap-3">
@@ -104,14 +103,14 @@ const Products = () => {
                 </div>
               </div>
               {selectedCategory === "Cars" && (
-                <div className="flex justify-between border-t pt-5 space-x-4">
+                <div className="flex flex-col space-y-4 md:flex-row md:justify-between md:space-y-0 border-t pt-5">
                   <div className="flex flex-col space-y-2">
                     <h2 className="text-gray-900 font-light text-xl mb-2">Brand</h2>
                     <Select
                       options={brandOptions}
                       value={brandOptions.find(brand => brand.value === selectedCarBrand)}
                       onChange={option => setSelectedCarBrand(option.value)}
-                      className="w-64"
+                      className="w-full md:w-64"
                     />
                   </div>
                   <div className="flex flex-col space-y-2">
@@ -120,7 +119,7 @@ const Products = () => {
                       options={yearOptions}
                       value={yearOptions.find(year => year.value === selectedCarYear)}
                       onChange={option => setSelectedCarYear(option.value)}
-                      className="w-64"
+                      className="w-full md:w-64"
                     />
                   </div>
                 </div>
@@ -138,7 +137,6 @@ const Products = () => {
                   key={product._id} 
                   className="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 hover:shadow-xl"
                   variants={itemVariants}
-
                 >
                   <a href={`/products/${product._id}`} className="block">
                     <div className="aspect-w-1 aspect-h-1 h-64">

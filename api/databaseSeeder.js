@@ -2,7 +2,7 @@ const router = require("express").Router();
 const User = require("./models/User");
 const users = require("./data/Users");
 const Product = require("./models/Product");
-const products = require("./data/Products");
+const products = require("./data/products"); // Changed 'Products' to 'products'
 const AsynHandler = require("express-async-handler");
 
 router.post(

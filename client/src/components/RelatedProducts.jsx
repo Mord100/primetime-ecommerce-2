@@ -5,6 +5,7 @@ import { productListAction } from "../Redux/Actions/Product"
 import { IoSearch } from "react-icons/io5"
 import { TbProgress } from "react-icons/tb"
 import { motion } from "framer-motion"
+import Select from 'react-select'
 
 const Products = () => {
   const dispatch = useDispatch()
@@ -14,6 +15,8 @@ const Products = () => {
   const [selectedBrand, setSelectedBrand] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All")
+  const [selectedCarBrand, setSelectedCarBrand] = useState("All") // Change initial state to "All"
+  const [selectedCarYear, setSelectedCarYear] = useState("All") // Change initial state to "All"
 
   useEffect(() => {
     dispatch(productListAction())
@@ -22,10 +25,16 @@ const Products = () => {
   const filteredProducts = products.filter((product) =>
     (selectedBrand ? product.brand === selectedBrand : true) &&
     (searchTerm ? product.name.toLowerCase().includes(searchTerm.toLowerCase()) : true) &&
-    (selectedCategory !== "All" ? product.category === selectedCategory : true)
+    (selectedCategory !== "All" ? product.category === selectedCategory : true) &&
+    (selectedCategory === "Cars" && selectedCarBrand !== "All" ? product.brand === selectedCarBrand : true) && // Update condition for brand
+    (selectedCategory === "Cars" && selectedCarYear !== "All" ? product.yearOfMake === selectedCarYear : true) // Update condition for year
   )
 
   const categories = ["All", "Cars", "Farm Commodities", "Electronics", "Stationery", "Real Estates"]
+
+  // Extract unique brands and years from the products
+  const carBrands = [...new Set(products.filter(product => product.category === "Cars").map(product => product.brand))] // Map all car brands
+  const carYears = [...new Set(products.filter(product => product.category === "Cars").map(product => product.yearOfMake))] // Map all car years
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -45,38 +54,25 @@ const Products = () => {
     }
   }
 
+  const brandOptions = [{ value: "All", label: "All" }, ...carBrands.map(brand => ({ value: brand, label: brand }))] // Add "All" option
+  const yearOptions = [{ value: "All", label: "All" }, ...carYears.map(year => ({ value: year, label: year }))] // Add "All" option
+
   return (
     <div className="bg-gray-100 min-h-screen">
       {loading ? (
         <div className="flex items-center justify-center h-screen">
           <TbProgress size={40} className="animate-spin mr-3 text-[#f24c1c]" />
-          <span className="text-xl font-semibold text-gray-700">Loading products...</span>
+          <span className="text-xl font-semibold text-gray-700">Loading...</span>
         </div>
       ) : error ? (
         <div className="text-center p-10 text-red-500 text-xl font-semibold">{error}</div>
       ) : (
         <section className="py-12 px-4 md:px-12 font-sans">
           <div className="container mx-auto max-w-7xl">
-            {/* <div className="flex w-full border-b mb-5 pb-5 items-center justify-between">            
-              <h1 className="md:text-5xl text-2xl font-bold text-gray-900">Our Products</h1>
-              <div className="relative w-full max-w-md ">
-                <input
-                  type="text"
-                  placeholder="Search products" 
-                  className="w-full p-4 pl-12 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 transition duration-300 text-gray-700"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <IoSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={24} />
-              </div>
-            </div> */}
-
+            
 
             <div className="mb-10 space-y-6">
-              
-
               <div>
-                {/* <h2 className="text-gray-900 font-bold text-2xl mb-4 text-center">Categories</h2> */}
                 <div className="flex flex-wrap justify-center gap-3">
                   {categories.map((category) => (
                     <button
@@ -93,6 +89,28 @@ const Products = () => {
                   ))}
                 </div>
               </div>
+              {selectedCategory === "Cars" && (
+                <div className="flex flex-col space-y-4 md:flex-row md:justify-between md:space-y-0 border-t pt-5">
+                  <div className="flex flex-col space-y-2">
+                    <h2 className="text-gray-900 font-light text-xl mb-2">Brand</h2>
+                    <Select
+                      options={brandOptions}
+                      value={brandOptions.find(brand => brand.value === selectedCarBrand)}
+                      onChange={option => setSelectedCarBrand(option.value)}
+                      className="w-full md:w-64"
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-2">
+                    <h2 className="text-gray-900 font-light text-xl mb-2">Year of Make</h2>
+                    <Select
+                      options={yearOptions}
+                      value={yearOptions.find(year => year.value === selectedCarYear)}
+                      onChange={option => setSelectedCarYear(option.value)}
+                      className="w-full md:w-64"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             <motion.div 

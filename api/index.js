@@ -4,7 +4,7 @@ const colors = require('colors')
 const cors = require("cors")
 
 
-const products = require('./data/Products')
+const products = require('./data/products')
 
 const connectDB = require('./config/db')
 

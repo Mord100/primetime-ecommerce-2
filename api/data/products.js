@@ -9,6 +9,8 @@
           countInStock: 5,
           rating: 4.8,
           numReview: 120,
+          brand: "Tesla",
+          yearOfMake: "2022",
         },
         {
           name: "Ford Mustang Mach-E",
@@ -19,6 +21,32 @@
           countInStock: 7,
           rating: 4.5,
           numReview: 85,
+          brand: "Ford",
+          yearOfMake: "2021",
+        },
+        {
+          name: "Toyota Camry",
+          image: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Toyota/Camry/10926/1708690549497/front-left-side-47.jpg?tr=w-664",
+          description: "The Toyota Camry is a mid-size sedan known for its reliability, comfort, and fuel efficiency. It offers a smooth ride, spacious interior, and advanced safety features.",
+          category: "Cars",
+          price: 24995,
+          countInStock: 10,
+          rating: 4.7,
+          numReview: 100,
+          brand: "Toyota",
+          yearOfMake: "2022",
+        },
+        {
+          name: "Honda Civic",
+          image: "https://media.ed.edmunds-media.com/honda/civic/2025/oem/2025_honda_civic_sedan_si_fq_oem_1_815.jpg",
+          description: "The Honda Civic is a compact sedan or coupe that offers a blend of fuel efficiency, reliability, and sporty performance. It features a comfortable interior, advanced safety features, and a range of trim levels.",
+          category: "Cars",
+          price: 19995,
+          countInStock: 15,
+          rating: 4.6,
+          numReview: 120,
+          brand: "Honda",
+          yearOfMake: "2022",
         },
         // Farm Commodities
         {
@@ -30,6 +58,8 @@
           countInStock: 100,
           rating: 4.7,
           numReview: 50,
+          brand: "",
+          yearOfMake: "",
         },
         {
           name: "Free-Range Eggs",
@@ -40,6 +70,8 @@
           countInStock: 200,
           rating: 4.8,
           numReview: 75,
+          brand: "",
+          yearOfMake: "",
         },
         // Electronics
         {
@@ -51,6 +83,8 @@
           countInStock: 50,
           rating: 4.9,
           numReview: 200,
+          brand: "",
+          yearOfMake: "",
         },
         {
           name: "Samsung 4K Smart TV",
@@ -61,6 +95,8 @@
           countInStock: 30,
           rating: 4.6,
           numReview: 150,
+          brand: "",
+          yearOfMake: "",
         },
         // Stationery
         {
@@ -72,6 +108,8 @@
           countInStock: 100,
           rating: 4.7,
           numReview: 80,
+          brand: "",
+          yearOfMake: "",
         },
         {
           name: "Pilot G2 Gel Pens Set",
@@ -82,6 +120,8 @@
           countInStock: 200,
           rating: 4.8,
           numReview: 120,
+          brand: "",
+          yearOfMake: "",
         },
         // Real Estates
         {
@@ -93,6 +133,8 @@
           countInStock: 1,
           rating: 4.5,
           numReview: 10,
+          brand: "",
+          yearOfMake: "",
         },
         {
           name: "Suburban Family Home",
@@ -103,6 +145,8 @@
           countInStock: 1,
           rating: 4.6,
           numReview: 15,
+          brand: "",
+          yearOfMake: "",
         },
       ];
       
