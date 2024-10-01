@@ -18,15 +18,14 @@ export const productListAction = () => async (dispatch) => {
     try {
         dispatch({ type: PRODUCT_LIST_REQ });
         const { data } = await axios.get(apiUrl);
-        console.log(data);
-        dispatch({ type: PRODUCT_LIST_REQ_SUCCESS, payload: data })
+        console.log(data); // Log the fetched products
+        dispatch({ type: PRODUCT_LIST_REQ_SUCCESS, payload: data });
     } catch (error) {
         dispatch({
             type: PRODUCT_LIST_REQ_FAIL,
             payload: error.response && error.response.data.message ? error.response.data.message : error.message
-        })
+        });
     }
-    
 }
 
 

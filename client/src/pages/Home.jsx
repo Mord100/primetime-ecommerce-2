@@ -6,7 +6,7 @@ import Products from "../components/Products"
 const Home =  () => {
     return (
       <Layout>
-        <Hero/>
+        {/* <Hero/> */}
         {/* <Logos/> */}
         <Products></Products>
       </Layout>

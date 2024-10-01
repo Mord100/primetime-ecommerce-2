@@ -6,8 +6,7 @@ import { TbProgress } from "react-icons/tb"
 import moment from "moment"
 import Layout from "../Layouts/Layouts"
 import { orderListAction } from "../Redux/Actions/Order"
-import Select from 'react-select'
-
+import Select from 'react-select';
 
 export function OrderHistory() {
   const dispatch = useDispatch()
@@ -20,6 +19,22 @@ export function OrderHistory() {
 
   const orderListReducer = useSelector((state) => state.orderListReducer)
   const { orders, loading, error } = orderListReducer
+
+  const orderTypeOptions = [
+    { value: "All orders", label: "All orders" },
+    { value: "pre-order", label: "Pre-order" },
+    { value: "transit", label: "In transit" },
+    { value: "confirmed", label: "Confirmed" },
+    { value: "cancelled", label: "Cancelled" },
+  ];
+
+  const durationOptions = [
+    { value: "this week", label: "this week" },
+    { value: "this month", label: "this month" },
+    { value: "last 3 months", label: "the last 3 months" },
+    { value: "last 6 months", label: "the last 6 months" },
+    { value: "this year", label: "this year" },
+  ];
 
   const filteredOrders = orders?.filter(order => {
     if (orderType !== "All orders") {
@@ -45,28 +60,19 @@ export function OrderHistory() {
               <h1 className="text-3xl font-bold text-gray-900 mb-4 sm:mb-0">My Orders</h1>
               <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                 <Select
-                  value={orderType}
-                  onChange={(e) => setOrderType(e.target.value)}
-                  className="block w-full sm:w-auto rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                >
-                  <option>All orders</option>
-                  <option value="pre-order">Pre-order</option>
-                  <option value="transit">In transit</option>
-                  <option value="confirmed">Confirmed</option>
-                  <option value="cancelled">Cancelled</option>
-                </Select>
+                  value={orderTypeOptions.find(option => option.value === orderType)}
+                  onChange={(option) => setOrderType(option.value)}
+                  options={orderTypeOptions}
+                  className="w-full sm:w-auto"
+                />
                 <div className="flex items-center">
                   <span className="text-gray-500 mr-2">from</span>
                   <Select
-                    value={duration}
-                    onChange={(e) => setDuration(e.target.value)}
-                  >
-                    <option>this week</option>
-                    <option value="this month">this month</option>
-                    <option value="last 3 months">the last 3 months</option>
-                    <option value="last 6 months">the last 6 months</option>
-                    <option value="this year">this year</option>
-                  </Select>
+                    value={durationOptions.find(option => option.value === duration)}
+                    onChange={(option) => setDuration(option.value)}
+                    options={durationOptions}
+                    className="w-full sm:w-auto"
+                  />
                 </div>
               </div>
             </div>

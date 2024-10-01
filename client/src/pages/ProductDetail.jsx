@@ -13,6 +13,7 @@ import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import RelatedProducts from "../components/RelatedProducts"
 import Layout from "../Layouts/Layouts"
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 
 function ProductDetail() {
   const { id } = useParams()
@@ -23,6 +24,7 @@ function ProductDetail() {
   const [qty, setQty] = useState(1)
   const [showTestDriveModal, setShowTestDriveModal] = useState(false)
   const [showContractPurchaseModal, setShowContractPurchaseModal] = useState(false)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   useEffect(() => {
     dispatch(productAction(id))
@@ -86,11 +88,27 @@ function ProductDetail() {
           >
             <div className="relative overflow-hidden rounded-2xl shadow-2xl">
               <img
-                src={product.image}
+                src={product.image[currentImageIndex]}
                 alt={product.name}
-                className="w-full h-[600px] object-cover transition-transform duration-300 hover:scale-105"
+                className="w-full h-[550px] object-cover transition-transform duration-300 hover:scale-105"
               />
-            
+              <div className="absolute bottom-0 left-0 right-0 bg-[#f24c1c] p-4 flex justify-between items-center">
+                <button
+                  onClick={() => setCurrentImageIndex(currentImageIndex - 1)}
+                  disabled={currentImageIndex === 0}
+                  className="text-white"
+                >
+                  <MdKeyboardArrowLeft className="w-6 h-6" />
+                </button>
+                <span className="text-white">{currentImageIndex + 1} of {product.image.length}</span>
+                <button
+                  onClick={() => setCurrentImageIndex(currentImageIndex + 1)}
+                  disabled={currentImageIndex === product.image.length - 1}
+                  className="text-white"
+                >
+                  <MdKeyboardArrowRight className="w-6 h-6" />
+                </button>
+              </div>
             </div>
           </motion.div>
           <motion.div
@@ -104,7 +122,7 @@ function ProductDetail() {
               <p className="text-lg text-gray-600">{product.brand} - {product.yearOfMake}</p>
             </div>
             <p className="text-xl font-semibold text-[#f24c1c]">
-              MWK {product.price ? product.price.toFixed(2) : 'N/A'}
+              MWK {product.price ? product.price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : 'N/A'}
             </p>
             <p className="text-gray-700 text-md leading-relaxed">{product.description}</p>
             
