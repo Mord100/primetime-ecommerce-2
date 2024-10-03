@@ -1,27 +1,29 @@
-import { useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { Link } from "react-router-dom"
-import { motion } from "framer-motion"
-import { FiUser, FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi"
-import { userRegisterAction } from "../../Redux/Actions/User"
-import Layout from "../../Layouts/Layouts"
-import { TbProgress } from "react-icons/tb"
-
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { FiUser, FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
+import { userRegisterAction } from "../../Redux/Actions/User";
+import Layout from "../../Layouts/Layouts";
+import { TbProgress } from "react-icons/tb";
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css'; // Import the styles
 
 export default function Register() {
-  const [email, setEmail] = useState("")
-  const [name, setName] = useState("")
-  const [password, setPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [rememberMe, setRememberMe] = useState(false)
-  const userRegisterReducer = useSelector((state) => state.userRegisterReducer)
-  const { loading, error } = userRegisterReducer
-  const dispatch = useDispatch()
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [phone, setPhone] = useState("");
+  const userRegisterReducer = useSelector((state) => state.userRegisterReducer);
+  const { loading, error } = userRegisterReducer;
+  const dispatch = useDispatch();
 
   const submitHandler = (e) => {
-    e.preventDefault()
-    dispatch(userRegisterAction(name, email, password))
-  }
+    e.preventDefault();
+    dispatch(userRegisterAction(name, email, phone, password)); // Use phone directly
+  };
 
   return (
     <Layout>
@@ -35,9 +37,9 @@ export default function Register() {
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">Create Account</h2>
           {loading && (
             <div className="flex items-center justify-center py-2">
-            <TbProgress size={40} className="animate-spin mr-3 text-[#f24c1c]" />
-            <span className="text-xl font-semibold text-gray-700">Loading...</span>
-          </div>
+              <TbProgress size={40} className="animate-spin mr-3 text-[#f24c1c]" />
+              <span className="text-xl font-semibold text-gray-700">Loading...</span>
+            </div>
           )}
           {error && (
             <motion.div 
@@ -71,6 +73,20 @@ export default function Register() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
+            </div>            
+            <div className="relative">
+              <PhoneInput
+                country={'mw'} // Default country
+                value={phone}
+                onChange={setPhone}
+                inputStyle={{
+                  width: '90%',
+                  padding: '10px',
+                  border: '1px solid #ccc',
+                  borderRadius: '5px',
+                  marginLeft: '35px', // Added margin to the left side
+                }}
+              />
             </div>
             <div className="relative">
               <FiLock className="absolute top-3 left-3 text-gray-400" />
@@ -90,6 +106,7 @@ export default function Register() {
                 {showPassword ? <FiEyeOff /> : <FiEye />}
               </button>
             </div>
+
             <div className="flex items-center justify-between text-sm">
               <label className="flex items-center">
                 <input
@@ -116,5 +133,5 @@ export default function Register() {
         </motion.div>
       </div>
     </Layout>
-  )
+  );
 }
