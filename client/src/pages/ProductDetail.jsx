@@ -14,7 +14,6 @@ import 'react-toastify/dist/ReactToastify.css'
 import RelatedProducts from "../components/RelatedProducts"
 import Layout from "../Layouts/Layouts"
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
 
 function ProductDetail() {
   const { id } = useParams()
@@ -27,39 +26,36 @@ function ProductDetail() {
   const [showContractPurchaseModal, setShowContractPurchaseModal] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
-  const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   if (!localStorage.getItem("userInfo")) {
-  //     navigate('/login');
-  //   } else {
-  //     dispatch(productAction(id))
-  //   }
-  // }, [dispatch, id, navigate])
+  useEffect(() => {
+    dispatch(productAction(id))
+  }, [dispatch, id])
 
   const addToCartHandler = () => {
-    if (!localStorage.getItem("userInfo")) {
-      navigate('/login');
-    } else {
-      dispatch(addToCartAction(id, qty))
-      toast.success("Item added to cart successfully!. Login to view cart")
+    const userInfo = localStorage.getItem('userInfo');
+    if (!userInfo) {
+      toast.error("Please login to add items to cart.");
+      return;
     }
+    dispatch(addToCartAction(id, qty))
+    toast.success("Item added to cart successfully!. Login to view cart")
   }
 
   const openTestDriveModal = () => {
-    if (!localStorage.getItem("userInfo")) {
-      navigate('/login');
-    } else {
-      setShowTestDriveModal(true)
+    const userInfo = localStorage.getItem('userInfo');
+    if (!userInfo) {
+      toast.error("Please login to request a test drive.");
+      return;
     }
+    setShowTestDriveModal(true)
   }
   const closeTestDriveModal = () => setShowTestDriveModal(false)
   const openContractPurchaseModal = () => {
-    if (!localStorage.getItem("userInfo")) {
-      navigate('/login');
-    } else {
-      setShowContractPurchaseModal(true)
+    const userInfo = localStorage.getItem('userInfo');
+    if (!userInfo) {
+      toast.error("Please login to initiate contract purchase.");
+      return;
     }
+    setShowContractPurchaseModal(true)
   }
   const closeContractPurchaseModal = () => setShowContractPurchaseModal(false)
 

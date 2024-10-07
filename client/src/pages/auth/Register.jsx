@@ -76,7 +76,7 @@ export default function Register() {
             </div>            
             <div className="relative">
               <PhoneInput
-                country={'mw'} // Default country
+                country={'mw'} 
                 value={phone}
                 onChange={setPhone}
                 inputStyle={{
@@ -84,7 +84,7 @@ export default function Register() {
                   padding: '10px',
                   border: '1px solid #ccc',
                   borderRadius: '5px',
-                  marginLeft: '35px', // Added margin to the left side
+                  marginLeft: '35px',
                 }}
               />
             </div>
