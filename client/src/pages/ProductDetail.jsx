@@ -34,6 +34,7 @@ function ProductDetail() {
     const userInfo = localStorage.getItem('userInfo');
     if (!userInfo) {
       toast.error("Please login to add items to cart.");
+      window.location.href = '/login';
       return;
     }
     dispatch(addToCartAction(id, qty))
@@ -44,6 +45,7 @@ function ProductDetail() {
     const userInfo = localStorage.getItem('userInfo');
     if (!userInfo) {
       toast.error("Please login to request a test drive.");
+      window.location.href = '/login';
       return;
     }
     setShowTestDriveModal(true)
@@ -53,6 +55,7 @@ function ProductDetail() {
     const userInfo = localStorage.getItem('userInfo');
     if (!userInfo) {
       toast.error("Please login to initiate contract purchase.");
+      window.location.href = '/login';
       return;
     }
     setShowContractPurchaseModal(true)
