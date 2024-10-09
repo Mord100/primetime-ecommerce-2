@@ -19,6 +19,8 @@ const databaseSeeder = require("./databaseSeeder");
 const userRoute = require("./routes/User");
 const productRoute = require("./routes/Product");
 const orderRoute = require("./routes/Order");
+const cartRoute = require("./routes/Cart");
+
 
 
 app.use(express.json())
@@ -38,6 +40,9 @@ app.use("/api/products", productRoute);
 
 //routes for orders
 app.use("/api/orders", orderRoute);
+
+//routes for cart
+app.use("/api/cart", cartRoute);
 
 // paypal payment api for client key;
 app.use("/api/config/paypal", (req, res) => {

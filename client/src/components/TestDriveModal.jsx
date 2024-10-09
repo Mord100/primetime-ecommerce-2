@@ -3,11 +3,9 @@ import emailjs from "emailjs-com";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiX, FiCalendar, FiMail, FiPhone, FiUser } from "react-icons/fi";
+import { FiX, FiCalendar, FiMail, FiPhone, FiUser, FiMapPin } from "react-icons/fi";
 import PhoneInput from "react-phone-input-2";
 import { FaRegIdCard } from "react-icons/fa";
-import {FiMapPin} from 'react-icons/fi'
-
 
 const TestDriveModal = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
@@ -15,14 +13,24 @@ const TestDriveModal = ({ isOpen, onClose }) => {
     email: "",
     phone: "",
     address: "",
-    nationid: "",
+    nationid: "", // Assuming this is where the ID card image will be stored
     date: "",
   });
 
   const [loading, setLoading] = useState(false);
+  const [idCardImage, setIdCardImage] = useState(null); // State to hold the uploaded ID card image
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => setFormData({ ...formData, nationid: e.target.result });
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -137,16 +145,15 @@ const TestDriveModal = ({ isOpen, onClose }) => {
                   htmlFor="national-id"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  National ID Number
+                  National ID Card
                 </label>
                 <div className="relative">
                   <FaRegIdCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                   <input
-                    type="text"
+                    type="file"
                     id="national-id"
                     name="nationid" // Ensure this matches the state property
-                    value={formData.nationid}
-                    onChange={handleChange}
+                    onChange={handleImageChange}
                     className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
                     required
                   />

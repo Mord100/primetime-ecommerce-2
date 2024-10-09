@@ -1,17 +1,42 @@
-import { useDispatch } from "react-redux"
-import { addToCartAction, removeFromCartAction } from "../Redux/Actions/Cart"
-import { motion, AnimatePresence } from "framer-motion"
-import { FiTrash2, FiMinus, FiPlus } from "react-icons/fi"
+import { useDispatch } from "react-redux";
+import { useParams, useLocation } from "react-router-dom";
+import { addToCartAction, removeFromCartAction } from "../Redux/Actions/Cart";
+import { motion, AnimatePresence } from "framer-motion";
+import { FiTrash2, FiMinus, FiPlus } from "react-icons/fi";
 
 export default function CartItem({ cartItems }) {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const { id: productIdFromParams } = useParams(); // Get product ID from URL params (if needed)
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const productIdFromSearch = searchParams.get('productId'); // Get product ID from search params (if needed)
 
-  const removeFromCartHandler = (id) => {
-    dispatch(removeFromCartAction(id))
-  }
+  // Get user information from localStorage
+  const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
+  const userId = userInfo._id || null; // Fallback if no user info is found
 
-  const addToCartHandler = (id, qty) => {
-    dispatch(addToCartAction(id, qty))
+  // Remove item from cart handler
+  const removeFromCartHandler = (productId) => {
+    try {
+      dispatch(removeFromCartAction(userId, productId));
+    } catch (error) {
+      console.error("Failed to remove from cart:", error);
+    }
+  };
+
+  // Add item to cart handler
+  const addToCartHandler = (productId, qty) => {
+    try {
+      const validQty = Math.max(1, qty); // Ensure quantity is at least 1
+      dispatch(addToCartAction(userId, productId, validQty));
+    } catch (error) {
+      console.error("Failed to add to cart:", error);
+    }
+  };
+
+  // Handle empty cart state
+  if (!cartItems || cartItems.length === 0) {
+    return <p>No items in the cart.</p>;
   }
 
   return (
@@ -21,7 +46,7 @@ export default function CartItem({ cartItems }) {
           <AnimatePresence>
             {cartItems.map((product) => (
               <motion.li
-                key={product.product}
+                key={product.product} // Use unique product ID as key
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
@@ -41,12 +66,17 @@ export default function CartItem({ cartItems }) {
                     <div>
                       <div className="flex justify-between">
                         <h3 className="text-sm">
-                          <a href={`/product/${product.product}`} className="font-medium text-gray-700 hover:text-gray-800">
+                          <a
+                            href={`/product/${product.product}`}
+                            className="font-medium text-gray-700 hover:text-gray-800"
+                          >
                             {product.name}
                           </a>
                         </h3>
                       </div>
-                      <p className="mt-1 text-sm font-medium text-gray-900">MWK {product.price.toFixed(2)}</p>
+                      <p className="mt-1 text-sm font-medium text-gray-900">
+                        MWK {product?.price?.toFixed(2)}
+                      </p>
                     </div>
 
                     <div className="mt-4 sm:mt-0 sm:pr-9">
@@ -66,6 +96,8 @@ export default function CartItem({ cartItems }) {
                           value={product.qty}
                           onChange={(e) => addToCartHandler(product.product, Number(e.target.value))}
                           className="mx-2 w-12 rounded border-gray-300 text-center sm:text-sm"
+                          type="number"
+                          min="1" // Ensure the minimum quantity is 1
                         />
                         <button
                           onClick={() => addToCartHandler(product.product, Math.min(product.countInStock, product.qty + 1))}
@@ -78,13 +110,15 @@ export default function CartItem({ cartItems }) {
                   </div>
 
                   <div className="mt-4 flex justify-between">
-                    <p className="text-sm text-gray-600">Subtotal: MWK {(product.price * product.qty).toFixed(2)}</p>
+                    <p className="text-sm text-gray-600">
+                      Subtotal: MWK {(product.price * product.qty).toFixed(2)}
+                    </p>
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       type="button"
                       className="flex items-center text-sm font-medium text-[#f24c1c] hover:text-[#00315a]"
-                      onClick={() => removeFromCartHandler(product.product)}
+                      onClick={() => removeFromCartHandler(product.product)} // Use product.product as the product ID
                     >
                       <FiTrash2 className="mr-1 h-4 w-4" />
                       Remove
@@ -97,5 +131,5 @@ export default function CartItem({ cartItems }) {
         </ul>
       </div>
     </div>
-  )
+  );
 }
