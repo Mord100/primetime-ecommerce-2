@@ -1,40 +1,55 @@
-import { useDispatch } from "react-redux";
-import { useParams, useLocation } from "react-router-dom";
-import { addToCartAction, removeFromCartAction } from "../Redux/Actions/Cart";
-import { motion, AnimatePresence } from "framer-motion";
-import { FiTrash2, FiMinus, FiPlus } from "react-icons/fi";
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams, useLocation } from 'react-router-dom';
+import { addToCartAction, removeFromCartAction, fetchCartItemsAction, resetCartAction } from '../Redux/Actions/Cart';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FiTrash2, FiMinus, FiPlus } from 'react-icons/fi';
 
-export default function CartItem({ cartItems }) {
+export default function CartItem() {
   const dispatch = useDispatch();
-  const { id: productIdFromParams } = useParams(); // Get product ID from URL params (if needed)
+  const { id: productIdFromParams } = useParams();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const productIdFromSearch = searchParams.get('productId'); // Get product ID from search params (if needed)
+  const productIdFromSearch = searchParams.get('productId');
 
-  // Get user information from localStorage
-  const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
-  const userId = userInfo._id || null; // Fallback if no user info is found
+  const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+  const userId = userInfo._id;
 
-  // Remove item from cart handler
+  // Safely access cart state with a default empty object
+  const { cartItems = [], loading = false, error = null } = useSelector((state) => state.cart || {});
+
+  useEffect(() => {
+    if (userId) {
+      dispatch(resetCartAction());
+      dispatch(fetchCartItemsAction(userId));
+    }
+  }, [userId, dispatch]);
+
   const removeFromCartHandler = (productId) => {
     try {
       dispatch(removeFromCartAction(userId, productId));
     } catch (error) {
-      console.error("Failed to remove from cart:", error);
+      console.error('Failed to remove from cart:', error);
     }
   };
 
-  // Add item to cart handler
   const addToCartHandler = (productId, qty) => {
     try {
-      const validQty = Math.max(1, qty); // Ensure quantity is at least 1
+      const validQty = Math.max(1, qty);
       dispatch(addToCartAction(userId, productId, validQty));
     } catch (error) {
-      console.error("Failed to add to cart:", error);
+      console.error('Failed to add to cart:', error);
     }
   };
 
-  // Handle empty cart state
+  if (loading) {
+    return <div>Loading cart items...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   if (!cartItems || cartItems.length === 0) {
     return <p>No items in the cart.</p>;
   }
@@ -46,7 +61,7 @@ export default function CartItem({ cartItems }) {
           <AnimatePresence>
             {cartItems.map((product) => (
               <motion.li
-                key={product.product} // Use unique product ID as key
+                key={product.product}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
@@ -125,7 +140,7 @@ export default function CartItem({ cartItems }) {
                     </motion.button>
                   </div>
                 </div>
-              </motion.li>
+                </motion.li>
             ))}
           </AnimatePresence>
         </ul>
