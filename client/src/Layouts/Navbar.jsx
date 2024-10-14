@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 import { userLogoutAction } from "../Redux/Actions/User";
 import { LiaShoppingBagSolid } from "react-icons/lia";
 import Checkout from "../pages/Checkout";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { fetchCartItemsAction } from "../Redux/Actions/Cart"; // Import the action
 
 const Navbar = () => {
   const userLoginReducer = useSelector((state) => state.userLoginReducer);
@@ -18,6 +19,13 @@ const Navbar = () => {
   };
 
   const [open, setOpen] = useState(false);
+
+  // Load the cart when the component mounts
+  useEffect(() => {
+    if (userInfo) {
+      dispatch(fetchCartItemsAction(userInfo._id)); // Fetch cart items for the logged-in user
+    }
+  }, [dispatch, userInfo]);
 
   return (
     <nav className="bg-white border-b">

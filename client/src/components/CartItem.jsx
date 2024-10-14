@@ -170,8 +170,8 @@ export default function CartItem() {
                           type="button"
                           className="flex items-center text-sm font-medium text-[#f24c1c] hover:text-[#00315a]"
                           onClick={() =>
-                            removeFromCartHandler(product?.productId?.product)
-                          } // Use product.product as the product ID
+                            removeFromCartHandler(product?.productId?._id)
+                          } 
                         >
                           <FiTrash2 className="mr-1 h-4 w-4" />
                           Remove
