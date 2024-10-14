@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogBackdrop,
@@ -8,21 +8,18 @@ import {
   DialogTitle,
 } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import {  useSelector } from "react-redux";
-import {Link} from "react-router-dom"
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import CartItem from "../components/CartItem";
 
 export default function Checkout({ open, setOpen }) {
-  
- 
-
-  const cart = useSelector((state) => state.cartReducer)
+  const cart = useSelector((state) => state.cartReducer);
   const { cartItems } = cart;
 
-
-
-
-  const total = cartItems.reduce((total, item) => total + item.qty * item.price, 0).toFixed(2)
+  const total = cartItems
+    .reduce((total, item) => total + item.qty * (item?.productId?.price || 0), 0)
+    // .reduce((total, item) => total + item.qty * item?.productId.price, 0)
+    .toFixed(2);
 
   return (
     <Dialog
@@ -60,10 +57,8 @@ export default function Checkout({ open, setOpen }) {
                       </button>
                     </div>
                   </div>
-                  <CartItem
-                    cartItems={cartItems}
-                   
-                  ></CartItem>
+                  {/* cart items */}
+                  <CartItem />
                 </div>
 
                 <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
