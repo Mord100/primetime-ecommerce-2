@@ -51,13 +51,13 @@ app.use("/api/config/paypal", (req, res) => {
 // Import the path module
 const path = require('path');
 
-// Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../client/dist')));
+// // Serve static files from the React app
+// app.use(express.static(path.join(__dirname, '../client/dist')));
 
-// Catch-all route - this should be the last route
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
-});
+// // Catch-all route - this should be the last route
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
+// });
 
 app.listen(port, () => console.log(`server started on port ${port}`))
 
