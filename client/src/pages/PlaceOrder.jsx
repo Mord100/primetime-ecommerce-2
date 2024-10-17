@@ -1,108 +1,111 @@
-import { useDispatch, useSelector } from "react-redux"
-import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { motion } from "framer-motion"
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
-import axios from "axios"
-import { FiTruck, FiCreditCard, FiShoppingBag } from "react-icons/fi"
-import Layout from "../Layouts/Layouts"
-import CartItem from "../components/CartItem"
-import { BASE_URL } from "../Redux/Constants/BASE_URL"
-import { orderAction, orderPaymentAction } from "../Redux/Actions/Order"
-import { saveShippingAddressAction } from "../Redux/Actions/Cart"
-import { ORDER_RESET } from "../Redux/Constants/Order"
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import axios from "axios";
+import { FiTruck, FiCreditCard, FiShoppingBag } from "react-icons/fi";
+import Layout from "../Layouts/Layouts";
+import CartItem from "../components/CartItem";
+import { BASE_URL } from "../Redux/Constants/BASE_URL";
+import { orderAction, orderPaymentAction } from "../Redux/Actions/Order";
+import { saveShippingAddressAction } from "../Redux/Actions/Cart";
+import { ORDER_RESET } from "../Redux/Constants/Order";
 
 export default function PlaceOrder() {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const cart = useSelector((state) => state.cartReducer)
-  const { cartItems, shippingAddress } = cart
-  const orderReducer = useSelector((state) => state.orderReducer)
-  const { order, success } = orderReducer
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const cart = useSelector((state) => state.cartReducer);
+  const { cartItems = [], shippingAddress } = cart; // Default to empty array
+  const orderReducer = useSelector((state) => state.orderReducer);
+  const { order, success } = orderReducer;
 
-  const [paymentResult, setPaymentResult] = useState({})
-  const [clientId, setClientId] = useState(null)
-  const [address, setAddress] = useState(shippingAddress.address || '')
-  const [city, setCity] = useState(shippingAddress.city || '')
-  const [postalCode, setPostalCode] = useState(shippingAddress.postalCode || '')
-  const [country, setCountry] = useState(shippingAddress.country || '')
+  const [paymentResult, setPaymentResult] = useState({});
+  const [clientId, setClientId] = useState(null);
+  const [address, setAddress] = useState(shippingAddress.address || '');
+  const [city, setCity] = useState(shippingAddress.city || '');
+  const [postalCode, setPostalCode] = useState(shippingAddress.postalCode || '');
+  const [country, setCountry] = useState(shippingAddress.country || '');
 
-  const addDecimal = (num) => (Math.round(num * 100) / 100).toFixed(2)
-  const subtotal = addDecimal(cartItems.reduce((total, item) => total + item.qty * item.price, 0))
-  const taxPrice = addDecimal(Number(0.15 * subtotal).toFixed(2))
-  const shippingPrice = addDecimal(subtotal > 100 ? 0 : 20)
-  const total = (Number(subtotal) + Number(taxPrice) + Number(shippingPrice)).toFixed(2)
+  const addDecimal = (num) => (Math.round(num * 100) / 100).toFixed(2);
+  const subtotal = addDecimal(cartItems.reduce((total, item) => {
+    const itemPrice = parseFloat(item.productId?.price) || 0; // Ensure item price is a number
+    return total + (item.qty * itemPrice);
+  }, 0));
+  const taxPrice = addDecimal(Number(0.15 * subtotal).toFixed(2));
+  const shippingPrice = addDecimal(subtotal > 100 ? 0 : 20);
+  const total = addDecimal(Number(subtotal) + Number(taxPrice) + Number(shippingPrice));
 
   useEffect(() => {
     const getPaypalClientID = async () => {
       try {
-        const { data } = await axios.get(`${BASE_URL}/api/config/paypal`)
-        setClientId(data)
+        const { data } = await axios.get(`${BASE_URL}/api/config/paypal`);
+        setClientId(data);
       } catch (error) {
-        console.error("Failed to fetch PayPal client ID:", error)
+        console.error("Failed to fetch PayPal client ID:", error);
       }
-    }
+    };
 
-    getPaypalClientID()
+    getPaypalClientID();
 
     if (success) {
-      dispatch({ type: ORDER_RESET })
-      dispatch(orderPaymentAction(order._id, paymentResult))
-      navigate(`/order/${order._id}`)
+      dispatch({ type: ORDER_RESET });
+      dispatch(orderPaymentAction(order._id, paymentResult));
+      navigate(`/order/${order._id}`);
     }
 
-    const script = document.createElement('script')
-    script.src = 'https://in.paychangu.com/js/popup.js'
-    script.async = true
-    document.body.appendChild(script)
+    const script = document.createElement('script');
+    script.src = 'https://in.paychangu.com/js/popup.js';
+    script.async = true;
+    document.body.appendChild(script);
     
     script.onload = () => {
-      console.log("Paychangu script loaded successfully")
-    }
+      console.log("Paychangu script loaded successfully");
+    };
     
     script.onerror = () => {
-      console.log("Failed to load Paychangu script")
-    }
+      console.log("Failed to load Paychangu script");
+    };
 
     return () => {
       if (document.body.contains(script)) {
-        document.body.removeChild(script)
+        document.body.removeChild(script);
       }
-    }
-  }, [dispatch, success, order, paymentResult, navigate])
+    };
+  }, [dispatch, success, order, paymentResult, navigate]);
 
   const successPaymentHandler = async (details) => {
     try {
-      setPaymentResult(details)
+      setPaymentResult(details);
       dispatch(orderAction({
-        orderItems: cart.cartItems,
+        orderItems: cartItems,
         shippingAddress: cart.shippingAddress,
         totalPrice: total,
         paymentMethod: "paypal",
         price: subtotal,
         taxPrice: taxPrice,
         shippingPrice: shippingPrice,
-      }))
+      }));
     } catch (err) {
-      console.error("Payment processing error:", err)
+      console.error("Payment processing error:", err);
     }
-  }
+  };
 
   const saveShippingAddress = () => {
-    dispatch(saveShippingAddressAction({ address, city, postalCode, country }))
-  }
+    dispatch(saveShippingAddressAction({ address, city, postalCode, country }));
+  };
 
   const handlePaychangu = async () => {
     try {
       const createdOrder = await dispatch(orderAction({
-        orderItems: cart.cartItems,
+        orderItems: cartItems,
         shippingAddress: cart.shippingAddress,
         totalPrice: total,
         paymentMethod: "paychangu",
         price: subtotal,
         taxPrice: taxPrice,
         shippingPrice: shippingPrice,
-      }))
+      }));
 
       if (typeof window !== 'undefined' && window.PaychanguCheckout) {
         window.PaychanguCheckout({
@@ -112,10 +115,10 @@ export default function PlaceOrder() {
           "currency": "MWK",
           "callback_url": `http://localhost:5173/order/${createdOrder._id}`,
           "return_url": `http://localhost:5173/order/${createdOrder._id}`,
-          "customer":{
+          "customer": {
             "email": "chingolo265@gmail.com",
-            "first_name":"Mordecai",
-            "last_name":"Chingolo",
+            "first_name": "Mordecai",
+            "last_name": "Chingolo",
           },
           "customization": {
             "title": "Order Payment",
@@ -125,14 +128,14 @@ export default function PlaceOrder() {
             "uuid": "uuid",
             "response": "Response"
           }
-        })
+        });
       } else {
-        console.error("PaychanguCheckout is not available")
+        console.error("PaychanguCheckout is not available");
       }
     } catch (error) {
-      console.error("Error creating order or initiating Paychangu checkout:", error)
+      console.error("Error creating order or initiating Paychangu checkout:", error);
     }
-  }
+  };
 
   return (
     <Layout>
@@ -155,19 +158,19 @@ export default function PlaceOrder() {
                   <div className="border-t pt-4">
                     <div className="flex justify-between text-sm font-medium">
                       <span className="text-gray-600">Subtotal</span>
-                      <span className="text-gray-900">MWK{subtotal}</span>
+                      <span className="text-gray-900">MWK{subtotal.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
                     </div>
                     <div className="flex justify-between text-sm font-medium mt-2">
                       <span className="text-gray-600">Tax</span>
-                      <span className="text-gray-900">MWK{taxPrice}</span>
+                      <span className="text-gray-900">MWK{taxPrice.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
                     </div>
                     <div className="flex justify-between text-sm font-medium mt-2">
                       <span className="text-gray-600">Shipping</span>
-                      <span className="text-gray-900">MWK{shippingPrice}</span>
+                      <span className="text-gray-900">MWK{shippingPrice.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
                     </div>
                     <div className="flex justify-between text-lg font-bold mt-4 pt-4 border-t">
                       <span className="text-gray-900">Total</span>
-                      <span className="text-gray-900">MWK{total}</span>
+                      <span className="text-gray-900">MWK{total.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
                     </div>
                   </div>
                 </div>
@@ -256,10 +259,10 @@ export default function PlaceOrder() {
                                 },
                               },
                             ],
-                          })
+                          });
                         }}
                         onApprove={(data, actions) => {
-                          return actions.order.capture().then(successPaymentHandler)
+                          return actions.order.capture().then(successPaymentHandler);
                         }}
                         style={{ layout: "vertical" }}
                       />
@@ -272,5 +275,5 @@ export default function PlaceOrder() {
         </div>
       </div>
     </Layout>
-  )
+  );
 }

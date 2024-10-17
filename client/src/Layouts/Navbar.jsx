@@ -5,7 +5,7 @@ import { userLogoutAction } from "../Redux/Actions/User";
 import { LiaShoppingBagSolid } from "react-icons/lia";
 import Checkout from "../pages/Checkout";
 import { useState, useEffect } from "react";
-import { fetchCartItemsAction } from "../Redux/Actions/Cart"; // Import the action
+import { fetchCartItemsAction } from "../Redux/Actions/Cart"; 
 
 const Navbar = () => {
   const userLoginReducer = useSelector((state) => state.userLoginReducer);

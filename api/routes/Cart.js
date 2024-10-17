@@ -42,14 +42,14 @@ router.post('/:userId', async (req, res) => {
 });
 
 // Update item quantity in cart
-router.put('/:userId/:itemId', async (req, res) => {
+router.put('/:userId/:productId', async (req, res) => {
     const { qty } = req.body;
     const userId = req.params.userId;
-    const itemId = req.params.itemId;
+    const productId = req.params.productId;
   
     try {
       const cartItem = await Cart.findOneAndUpdate(
-        { userId, _id: itemId },
+        { userId, _id: productId },
         { qty },
         { new: true }
       );
@@ -68,7 +68,7 @@ router.put('/:userId/:itemId', async (req, res) => {
   // Remove item from cart
   router.delete('/:userId', async (req, res) => {
     const userId = req.params.userId;
-    const productId = req.query.productId; // Changed from req.params.itemId to req.query.productId
+    const productId = req.query.productId; // Changed from req.params.productId to req.query.productId
   
     try {
       const cartItem = await Cart.findOneAndDelete({ userId, productId });
