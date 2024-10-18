@@ -33,12 +33,12 @@ const Navbar = () => {
       <div className="flex justify-between h-16">
         <div className="flex-shrink-0 flex items-center">
           <Link to="/" className="flex items-center">
-            <img
+            {/* <img
               src="https://www.svgrepo.com/show/520948/shopping-bag-4.svg"
               className="h-8 w-8 mr-2"
               alt="PRIMETIME Shop Logo"
-            />
-            <span className="text-xl font-bold text-gray-900">PRIMETIME Shop</span>
+            /> */}
+            <span className="text-xl font-bold text-gray-900">Primetime <span className="font-light">Store</span></span>
           </Link>
         </div>
         
@@ -46,7 +46,7 @@ const Navbar = () => {
           {!userInfo ? (
             <Link
               to="/register"
-              className="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#00315a] hover:bg-opacity-90"
+              className="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-gray-800 underline hover:bg-opacity-90"
             >
               Login
             </Link>
