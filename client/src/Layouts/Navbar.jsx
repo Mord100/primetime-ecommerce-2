@@ -28,7 +28,7 @@ const Navbar = () => {
   }, [dispatch, userInfo]);
 
   return (
-    <nav className="bg-white border-b">
+    <nav className="bg-white fixed z-20 w-full border-b">
     <div className="mx-auto px-4 lg:px-32">
       <div className="flex justify-between h-16">
         <div className="flex-shrink-0 flex items-center">
