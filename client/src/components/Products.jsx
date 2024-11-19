@@ -93,62 +93,66 @@ const Products = () => {
   };
 
   const ProductCard = ({ product, viewMode }) => (
-    <motion.div
-      variants={itemVariants}
-      className={`bg-white overflow-hidden transition-all duration-300 ${
-        viewMode === 'list' ? 'flex' : ''
-      }`}
-    >
-      <div className={`${viewMode === 'list' ? 'w-1/3' : 'w-full'} relative group`}>
-        <img
-          alt={`Image of ${product.name}`}
-          className="w-full h-72 object-cover object-center transition-transform duration-700 group-hover:scale-105"
-          src={product.image?.[0] || "fallback-image-url.jpg"}
-        />
-        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-5 transition-all duration-300" />
-      </div>
-      <div className={`pt-4 ${viewMode === 'list' ? 'w-2/3 px-8' : 'w-full'}`}>
-        <div className="flex justify-between items-start mb-1">
-          <div className="flex-grow">
-            <h2 className="text-lg text-red-600 font-medium hover:text-gray-700 transition-colors">
-              {product.name}
-            </h2>
-            <p className="text-gray-500 text-sm mb-2">
-              {product.category}
-            </p>
+    <a href={`/products/${product._id}`}>
+      <motion.div
+        variants={itemVariants}
+        className={`overflow-hidden transition-all duration-300 ${
+          viewMode === 'list' ? 'flex' : ''
+        }`}
+      >
+        <div className={`${viewMode === 'list' ? 'w-1/3' : 'w-full'} relative group`}>
+          <img
+            alt={`Image of ${product.name}`}
+            className="w-full h-72 object-contain object-center transition-transform duration-700 group-hover:scale-105"
+            src={product.image?.[0] || "fallback-image-url.jpg"}
+          />
+        </div>
+        <div className={`pt-4 ${viewMode === 'list' ? 'w-2/3 px-8' : 'w-full'}`}>
+          <div className="flex justify-between items-start mb-1">
+            <div className="flex-grow">
+              <h2 className="text-lg text-red-600 font-medium hover:text-gray-700 transition-colors">
+                {product.name}
+              </h2>
+              <p className="text-gray-500 text-sm mb-2">
+                {product.category}
+              </p>
+            </div>
+            <span className="text-gray-900 font-medium">
+              MWK {product.price?.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }) || 'N/A'}
+            </span>
           </div>
-          <span className="text-gray-900 font-medium">
-            MWK {product.price?.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }) || 'N/A'}
-          </span>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-sm text-gray-500">{product.brand}</span>
+            <span className="text-gray-300">•</span>
+            <span className="text-sm text-gray-500">{product.yearOfMake}</span>
+          </div>
+          {viewMode === 'list' && (
+            <p className="text-gray-600 text-sm leading-relaxed mt-4">
+              {product.description || "No description available"}
+            </p>
+          )}
+          <div className="flex justify-end mt-auto">
+            <button className="text-white bg-gray-900 px-4 py-2 rounded-tl-lg">View</button>
+          </div>
         </div>
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-sm text-gray-500">{product.brand}</span>
-          <span className="text-gray-300">•</span>
-          <span className="text-sm text-gray-500">{product.yearOfMake}</span>
-        </div>
-        {viewMode === 'list' && (
-          <p className="text-gray-600 text-sm leading-relaxed mt-4">
-            {product.description || "No description available"}
-          </p>
-        )}
-      </div>
-    </motion.div>
+      </motion.div>
+    </a>
   );
 
   const FilterContent = () => (
     <div className="space-y-6">
       <div>
-        <h3 className="text-base font-medium text-gray-900 mb-4">Categories</h3>
+        <h3 className="text-base font-medium text-red-600 border-b pb-3 mb-4">Categories</h3>
         {categories.map((category) => (
           <button
             key={category}
             className={`block w-full text-left py-2 text-sm transition-colors ${
               selectedCategory === category
                 ? 'text-black font-medium'
-                : 'text-gray-600 hover:text-black'
+                : 'text-gray-700 hover:text-black'
             }`}
             onClick={() => setSelectedCategory(category)}
           >
@@ -271,7 +275,7 @@ const Products = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <IoSearch
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"
                 size={20}
               />
             </div>

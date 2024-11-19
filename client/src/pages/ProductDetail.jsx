@@ -19,43 +19,40 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import RelatedProducts from "../components/RelatedProducts";
 import Layout from "../Layouts/Layouts";
-import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { TbProgress } from "react-icons/tb";
-
+import LoadingSpinner from "../components/LoadingSpinner";
 
 function ProductDetail() {
-  const { id } = useParams(); // Get the product ID from the URL
+  const { id } = useParams();
   const dispatch = useDispatch();
   const productReducer = useSelector((state) => state.productReducer);
   const { loading, error, product } = productReducer;
 
   const [qty, setQty] = useState(1);
   const [showTestDriveModal, setShowTestDriveModal] = useState(false);
-  const [showContractPurchaseModal, setShowContractPurchaseModal] =
-    useState(false);
+  const [showContractPurchaseModal, setShowContractPurchaseModal] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
-    dispatch(productAction(id)); // Fetch product details using the ID
+    dispatch(productAction(id));
   }, [dispatch, id]);
 
   const addToCartHandler = () => {
-    const userInfo = JSON.parse(localStorage.getItem("userInfo")); // Retrieve and parse user info from local storage
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     if (!userInfo) {
       toast.error("Please login to add items to cart.");
       window.location.href = "/login";
       return;
     }
     
-    const userId = userInfo._id; // Get the user ID from the parsed user info
+    const userId = userInfo._id;
     
-    // Check if the quantity is valid
     if (qty < 1 || qty > product.countInStock) {
       toast.error("Invalid quantity.");
       return;
     }
   
-    dispatch(addToCartAction(userId, id, qty)); // Pass user ID, product ID, and quantity
+    dispatch(addToCartAction(userId, id, qty));
     toast.success("Item added to cart successfully!");
   };
 
@@ -68,7 +65,9 @@ function ProductDetail() {
     }
     setShowTestDriveModal(true);
   };
+
   const closeTestDriveModal = () => setShowTestDriveModal(false);
+
   const openContractPurchaseModal = () => {
     const userInfo = localStorage.getItem("userInfo");
     if (!userInfo) {
@@ -78,36 +77,22 @@ function ProductDetail() {
     }
     setShowContractPurchaseModal(true);
   };
+
   const closeContractPurchaseModal = () => setShowContractPurchaseModal(false);
 
   if (loading) {
     return (
       <Layout>
-        <div className="flex items-center justify-center h-screen">
-          <TbProgress size={40} className="animate-spin mr-3 text-[#f24c1c]" />
-          <span className="text-xl font-semibold text-gray-700">
-            Loading...
-          </span>
-        </div>
+        <LoadingSpinner/>
       </Layout>
     );
   }
 
-  if (error) {
+  if (error || !product || !product.image || product.image.length === 0) {
     return (
       <Layout>
         <div className="flex items-center justify-center h-screen">
-          <p className="text-red-500 text-xl">{error}</p>
-        </div>
-      </Layout>
-    );
-  }
-
-  if (!product || !product.image || product.image.length === 0) {
-    return (
-      <Layout>
-        <div className="flex items-center justify-center h-screen">
-          <p className="text-gray-500 text-xl">No product data available.</p>
+          <p className="text-red-500 text-xl">{error || "No product data available."}</p>
         </div>
       </Layout>
     );
@@ -115,147 +100,150 @@ function ProductDetail() {
 
   return (
     <Layout>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="container mx-auto px-4 py-12 max-w-7xl"
-      >
-        <div className="flex flex-col lg:flex-row gap-12">
-          <motion.div
-            className="lg:w-3/5"
-            initial={{ x: -50, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <div className="relative overflow-hidden rounded-2xl shadow-2xl">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* Image Section */}
+          <div className="space-y-4">
+            <div className="aspect-square bg-gray-50">
               <img
-                src={product.image[currentImageIndex] || 'fallback-image-url.jpg'}
+                src={product.image[currentImageIndex]}
                 alt={product.name}
-                className="w-full h-[550px] object-cover transition-transform duration-300 hover:scale-105"
+                className="w-full h-full object-contain"
               />
-              <div className="absolute bottom-0 left-0 right-0 bg-[#f24c1c] p-4 flex justify-between items-center">
-                <button
-                  onClick={() => setCurrentImageIndex(currentImageIndex - 1)}
-                  disabled={currentImageIndex === 0}
-                  className="text-white"
-                >
-                  <MdKeyboardArrowLeft className="w-6 h-6" />
-                </button>
-                <span className="text-white">
-                  {currentImageIndex + 1} of {product.image.length}
-                </span>
-                <button
-                  onClick={() => setCurrentImageIndex(currentImageIndex + 1)}
-                  disabled={currentImageIndex === product.image.length - 1}
-                  className="text-white"
-                >
-                  <MdKeyboardArrowRight className="w-6 h-6" />
-                </button>
-              </div>
             </div>
-          </motion.div>
-          <motion.div
-            className="lg:w-2/5 space-y-8"
-            initial={{ x: 50, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.4 }}
-          >
+            <div className="grid grid-cols-6 gap-2">
+              {product.image.map((img, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentImageIndex(index)}
+                  className={`border-2 overflow-hidden ${
+                    currentImageIndex === index ? 'border-red-600' : 'border-gray-200'
+                  }`}
+                >
+                  <img src={img} alt={`${product.name} view ${index + 1}`} className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Product Info Section */}
+          <div className="space-y-6">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 ">
-                {product.name}
-              </h1>
+              <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
               <p className="text-lg text-gray-600">
                 {product.brand} - {product.yearOfMake}
               </p>
             </div>
-            <p className="text-xl font-semibold text-[#f24c1c]">
-              MWK{" "}
-              {product.price
-                ? product.price.toLocaleString(undefined, {
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-2xl font-bold text-gray-900">
+                  MWK {product.price?.toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
-                  })
-                : "N/A"}
-            </p>
+                  })}
+                </span>
+              </div>
+              {product.countInStock > 0 ? (
+                <p className="text-sm text-green-600">In stock</p>
+              ) : (
+                <p className="text-sm text-red-600 bg-red-50 p-2">Out of Stock</p>
+              )}
+            </div>
+
             <p className="text-gray-700 text-md leading-relaxed">
               {product.description}
             </p>
 
-            {product.countInStock > 0 ? (
-              <div className="space-y-6">
-                <div className="flex items-center space-x-4 bg-gray-100 rounded-lg p-2 w-max">
+            {product.countInStock > 0 && (
+              <div className="space-y-4">
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center border">
+                    <button
+                      onClick={() => setQty(Math.max(1, qty - 1))}
+                      className="p-2 hover:bg-gray-100"
+                    >
+                      <FiMinus />
+                    </button>
+                    <span className="px-4 py-2 border-x">{qty}</span>
+                    <button
+                      onClick={() => setQty(Math.min(product.countInStock, qty + 1))}
+                      className="p-2 hover:bg-gray-100"
+                    >
+                      <FiPlus />
+                    </button>
+                  </div>
+                  
                   <button
-                    onClick={() => setQty(Math.max(1, qty - 1))}
-                    className="p-2 rounded-lg bg-white shadow-md hover:bg-gray-200 transition-colors"
+                    onClick={addToCartHandler}
+                    className="flex-1 bg-red-600 text-white py-3 px-6 hover:bg-red-700 transition-colors flex items-center justify-center space-x-2"
                   >
-                    <FiMinus className="w-6 h-6" />
-                  </button>
-                  <span className="font-medium text-2xl w-12 text-center">
-                    {qty}
-                  </span>
-                  <button
-                    onClick={() =>
-                      setQty(Math.min(product.countInStock, qty + 1))
-                    }
-                    className="p-2 rounded-lg bg-white shadow-md hover:bg-gray-200 transition-colors"
-                  >
-                    <FiPlus className="w-6 h-6" />
+                    <FiShoppingCart className="w-5 h-5" />
+                    <span>Buy Now</span>
                   </button>
                 </div>
-                <button
-                  onClick={addToCartHandler}
-                  className="w-full py-4 px-6 bg-[#f24c1c] text-white rounded-lg hover:bg-opacity-90 transition-colors flex items-center justify-center space-x-2 text-xl font-semibold shadow-lg hover:shadow-xl transform"
-                >
-                  <FiShoppingCart className="w-6 h-6" />
-                  <span>Buy Now</span>
-                </button>
+
                 {product.category === "Cars" && (
-                  <div className="space-y-4 pt-4">
+                  <div className="space-y-3 pt-4">
                     <button
                       onClick={openTestDriveModal}
-                      className="w-full py-3 px-4 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2 text-lg font-medium hover:shadow-md"
+                      className="w-full py-3 px-4  bg-gray-900 text-white hover:bg-opacity-90 transition-colors flex items-center justify-center space-x-2"
                     >
-                      <IoCarSportOutline className="w-6 h-6" />
+                      <IoCarSportOutline className="w-5 h-5" />
                       <span>Request a Test Drive</span>
                     </button>
+                    
                     <button
                       onClick={openContractPurchaseModal}
-                      className="w-full py-3 px-4 bg-[#00315a] text-white rounded-lg hover:bg-opacity-90 transition-colors flex items-center justify-center space-x-2 text-lg font-medium shadow-lg hover:shadow-xl"
+                      className="w-full py-3 px-4 bg-blue-900 text-white hover:bg-blue-800 transition-colors flex items-center justify-center space-x-2"
                     >
-                      <BsFileEarmarkText className="w-6 h-6" />
+                      <BsFileEarmarkText className="w-5 h-5" />
                       <span>Contract Purchase</span>
                     </button>
                   </div>
                 )}
               </div>
-            ) : (
-              <p className="text-red-500 text-xl font-medium bg-red-100 p-4 rounded-lg">
-                Out of Stock
-              </p>
             )}
-          </motion.div>
+
+            <div className="border-t pt-6">
+              <h3 className="text-sm font-medium text-gray-900">Product Details</h3>
+              <div className="mt-4 space-y-3">
+                <div className="grid grid-cols-2 text-sm">
+                  <span className="text-gray-500">Brand</span>
+                  <span>{product.brand}</span>
+                </div>
+                <div className="grid grid-cols-2 text-sm">
+                  <span className="text-gray-500">Year</span>
+                  <span>{product.yearOfMake}</span>
+                </div>
+                <div className="grid grid-cols-2 text-sm">
+                  <span className="text-gray-500">Category</span>
+                  <span>{product.category}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </motion.div>
 
-      <AnimatePresence>
-        {showTestDriveModal && (
-          <TestDriveModal
-            isOpen={showTestDriveModal}
-            onClose={closeTestDriveModal}
-          />
-        )}
+        <AnimatePresence>
+          {showTestDriveModal && (
+            <TestDriveModal
+              isOpen={showTestDriveModal}
+              onClose={closeTestDriveModal}
+            />
+          )}
 
-        {showContractPurchaseModal && (
-          <ContractPurchaseModal
-            isOpen={showContractPurchaseModal}
-            onClose={closeContractPurchaseModal}
-          />
-        )}
-      </AnimatePresence>
+          {showContractPurchaseModal && (
+            <ContractPurchaseModal
+              isOpen={showContractPurchaseModal}
+              onClose={closeContractPurchaseModal}
+            />
+          )}
+        </AnimatePresence>
 
-      <RelatedProducts />
-      <ToastContainer position="bottom-right" autoClose={3000} />
+        <RelatedProducts />
+        <ToastContainer position="bottom-right" autoClose={3000} />
+      </div>
     </Layout>
   );
 }
