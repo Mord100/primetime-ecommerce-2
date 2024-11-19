@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import Select from "react-select";
 import { CiShop } from "react-icons/ci";
 import { productListAction } from "../Redux/Actions/Product";
+import LoadingSpinner from './LoadingSpinner';
 
 
 const Products = () => {
@@ -94,74 +95,60 @@ const Products = () => {
   const ProductCard = ({ product, viewMode }) => (
     <motion.div
       variants={itemVariants}
-      className={`bg-white rounded-md overflow-hidden shadow-md transition-all duration-300 hover:shadow-xl ${
+      className={`bg-white overflow-hidden transition-all duration-300 ${
         viewMode === 'list' ? 'flex' : ''
       }`}
     >
-      <div className={`${viewMode === 'list' ? 'w-1/3' : 'w-full'}`}>
+      <div className={`${viewMode === 'list' ? 'w-1/3' : 'w-full'} relative group`}>
         <img
           alt={`Image of ${product.name}`}
-          className="w-full h-64 object-cover object-center"
+          className="w-full h-72 object-cover object-center transition-transform duration-700 group-hover:scale-105"
           src={product.image?.[0] || "fallback-image-url.jpg"}
         />
+        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-5 transition-all duration-300" />
       </div>
-      <div className={`p-6 ${viewMode === 'list' ? 'w-2/3' : 'w-full'}`}>
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h2 className="text-gray-900 font-semibold text-xl mb-2">
+      <div className={`pt-4 ${viewMode === 'list' ? 'w-2/3 px-8' : 'w-full'}`}>
+        <div className="flex justify-between items-start mb-1">
+          <div className="flex-grow">
+            <h2 className="text-lg text-red-600 font-medium hover:text-gray-700 transition-colors">
               {product.name}
             </h2>
-            <p className="text-gray-600 text-sm mb-3">
-              {product.brand} | {product.yearOfMake}
+            <p className="text-gray-500 text-sm mb-2">
+              {product.category}
             </p>
           </div>
-          <span className="text-[#f24c1c] font-bold text-xl">
+          <span className="text-gray-900 font-medium">
             MWK {product.price?.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             }) || 'N/A'}
           </span>
         </div>
-        <p className="text-gray-600 mb-4 line-clamp-2">
-          {product.description || "No description available"}
-        </p>
-
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-sm text-gray-500">{product.brand}</span>
+          <span className="text-gray-300">•</span>
+          <span className="text-sm text-gray-500">{product.yearOfMake}</span>
+        </div>
+        {viewMode === 'list' && (
+          <p className="text-gray-600 text-sm leading-relaxed mt-4">
+            {product.description || "No description available"}
+          </p>
+        )}
       </div>
     </motion.div>
   );
 
-  // Mobile Filters Overlay
-  const MobileFilters = () => (
-    <div className={`fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity ${mobileFiltersOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-      <div className={`fixed inset-y-0 left-0 w-full max-w-xs bg-white transform transition-transform ${mobileFiltersOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="h-full overflow-y-auto p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-semibold">Filters</h3>
-            <button 
-              onClick={() => setMobileFiltersOpen(false)}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              ✕
-            </button>
-          </div>
-          <FilterContent />
-        </div>
-      </div>
-    </div>
-  );
-
-  // Filter Content Component
   const FilterContent = () => (
-    <>
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold mb-4">Categories</h3>
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-base font-medium text-gray-900 mb-4">Categories</h3>
         {categories.map((category) => (
           <button
             key={category}
-            className={`block w-full text-left px-4 py-2 rounded-md mb-2 ${
+            className={`block w-full text-left py-2 text-sm transition-colors ${
               selectedCategory === category
-                ? 'bg-[#fff3f0] text-[#f24c1c] font-medium'
-                : 'text-gray-600 hover:bg-gray-50'
+                ? 'text-black font-medium'
+                : 'text-gray-600 hover:text-black'
             }`}
             onClick={() => setSelectedCategory(category)}
           >
@@ -172,15 +159,15 @@ const Products = () => {
 
       {selectedCategory === "Cars" && (
         <>
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold mb-4">Car Brands</h3>
+          <div>
+            <h3 className="text-base font-medium text-gray-900 mb-4">Car Brands</h3>
             {carBrands.map((brand) => (
               <button
                 key={brand}
-                className={`block w-full text-left px-4 py-2 rounded-md mb-2 ${
+                className={`block w-full text-left py-2 text-sm transition-colors ${
                   selectedCarBrand === brand
-                    ? 'bg-[#fff3f0] text-[#f24c1c] font-medium'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    ? 'text-black font-medium'
+                    : 'text-gray-600 hover:text-black'
                 }`}
                 onClick={() => setSelectedCarBrand(brand)}
               >
@@ -189,15 +176,15 @@ const Products = () => {
             ))}
           </div>
 
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold mb-4">Year</h3>
+          <div>
+            <h3 className="text-base font-medium text-gray-900 mb-4">Year</h3>
             {carYears.map((year) => (
               <button
                 key={year}
-                className={`block w-full text-left px-4 py-2 rounded-md mb-2 ${
+                className={`block w-full text-left py-2 text-sm transition-colors ${
                   selectedCarYear === year
-                    ? 'bg-[#fff3f0] text-[#f24c1c] font-medium'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    ? 'text-black font-medium'
+                    : 'text-gray-600 hover:text-black'
                 }`}
                 onClick={() => setSelectedCarYear(year)}
               >
@@ -208,111 +195,108 @@ const Products = () => {
         </>
       )}
 
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold mb-4">Price Range</h3>
+      <div>
+        <h3 className="text-base font-medium text-gray-900 mb-4">Price Range</h3>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Min Price (MWK)</label>
+            <label className="block text-sm text-gray-600 mb-2">Min Price (MWK)</label>
             <input
               type="number"
               value={minPrice}
               onChange={(e) => setMinPrice(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#f24c1c]"
+              className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 outline-none transition-colors"
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Max Price (MWK)</label>
+            <label className="block text-sm text-gray-600 mb-2">Max Price (MWK)</label>
             <input
               type="number"
               value={maxPrice}
               onChange={(e) => setMaxPrice(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#f24c1c]"
+              className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 outline-none transition-colors"
             />
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-white min-h-screen p-4 md:px-24">
       {loading ? (
-        <div className="flex items-center justify-center h-screen">
-          <TbProgress size={40} className="animate-spin mr-3 text-[#f24c1c]" />
-          <span className="text-xl font-semibold text-gray-700">
-            Loading products...
-          </span>
-        </div>
+        <LoadingSpinner/>
       ) : error ? (
-        <div className="text-center p-10 text-red-500 text-xl font-semibold">
+        <div className="text-center p-10 text-red-600 text-xl">
           {error}
         </div>
       ) : (
-        <div className="container mx-auto max-w-7xl px-4 py-20">
-          {/* Hero Section */}
-          <div className="bg-gradient-to-r from-gray-900 to-red-500 text-white rounded-xl p-8 mb-8">
-            <h1 className="text-4xl font-bold mb-4">Discover Amazing Products</h1>
-            <p className="text-gray-300 max-w-2xl">
-              Browse through our carefully curated collection of premium products. 
-              From luxury cars to electronics, we ensure quality and authenticity in every item.
-            </p>
+        <div className="max-w-screen-2xl mx-auto px-8 py-12">
+          {/* Header Section */}
+          <div className="mb-12">
+            <div className="flex items-baseline justify-between border-b border-gray-200 pb-6">
+              <h1 className="text-3xl font-medium text-gray-900">Products</h1>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 transition-colors ${
+                    viewMode === 'grid'
+                      ? 'text-black'
+                      : 'text-gray-400 hover:text-black'
+                  }`}
+                >
+                  <IoGrid size={20} />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 transition-colors ${
+                    viewMode === 'list'
+                      ? 'text-black'
+                      : 'text-gray-400 hover:text-black'
+                  }`}
+                >
+                  <IoList size={20} />
+                </button>
+              </div>
+            </div>
           </div>
 
-          {/* Search and View Toggle */}
-          <div className="flex flex-col md:flex-row gap-4 items-center mb-8">
-            <div className="relative flex-grow">
+          {/* Search Bar */}
+          <div className="mb-12">
+            <div className="relative">
               <input
                 type="text"
-                placeholder="Search for products..."
-                className="w-full p-4 pl-12 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f24c1c] transition duration-300"
+                placeholder="Search products..."
+                className="w-full py-4 pl-12 pr-4 bg-gray-50 border-0 outline-none text-gray-900 placeholder-gray-500"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <IoSearch
                 className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
-                size={24}
+                size={20}
               />
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-3 rounded-md ${
-                  viewMode === 'grid'
-                    ? 'bg-[#f24c1c] text-white'
-                    : 'bg-white text-gray-600'
-                }`}
-              >
-                <IoGrid size={20} />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-3 rounded-md ${
-                  viewMode === 'list'
-                    ? 'bg-[#f24c1c] text-white'
-                    : 'bg-white text-gray-600'
-                }`}
-              >
-                <IoList size={20} />
-              </button>
             </div>
           </div>
 
-          <div className="flex gap-8">
+          <div className="flex gap-12">
             {/* Sidebar */}
             <div className="hidden md:block w-64 flex-shrink-0">
-              <div className="bg-white rounded-md p-6 shadow-sm">
+              <div className="sticky top-8">
+                <div className="flex items-center justify-between mb-8">
+                  <h2 className="text-lg font-medium text-gray-900">Filters</h2>
+                  {/* <button className="text-sm text-gray-600 hover:text-black">Clear all</button> */}
+                </div>
                 <FilterContent />
               </div>
             </div>
 
             {/* Main Content */}
             <div className="flex-grow">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-semibold">
-                  {filteredProducts.length} Products Found
+              <div className="flex justify-between items-center mb-8">
+                <h2 className="text-lg font-medium text-gray-900">
+                  {filteredProducts.length} Products
                 </h2>
                 <button
-                  className="md:hidden flex items-center gap-2 bg-white px-4 py-2 rounded-md shadow-sm"
+                  className="md:hidden flex items-center gap-2 text-gray-600 hover:text-black"
                   onClick={() => setMobileFiltersOpen(true)}
                 >
                   <IoFilterSharp /> Filters
@@ -322,9 +306,9 @@ const Products = () => {
               <motion.div
                 className={`grid ${
                   viewMode === 'grid'
-                    ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
+                    ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
                     : 'grid-cols-1'
-                } gap-6`}
+                } gap-8`}
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
@@ -338,8 +322,9 @@ const Products = () => {
                     />
                   ))
                 ) : (
-                  <div className="col-span-full flex items-center justify-center text-center p-10 text-gray-500 text-lg">
-                    No products found matching your criteria
+                  <div className="col-span-full py-16 text-center">
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Products Found</h3>
+                    <p className="text-gray-500">Try adjusting your search or filter criteria</p>
                   </div>
                 )}
               </motion.div>
@@ -347,7 +332,24 @@ const Products = () => {
           </div>
 
           {/* Mobile Filters */}
-          <MobileFilters />
+          <div className={`fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity ${mobileFiltersOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+            <div className={`fixed inset-y-0 right-0 w-full max-w-xs bg-white transform transition-transform ${mobileFiltersOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+              <div className="h-full overflow-y-auto">
+                <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                  <h3 className="text-lg font-medium text-gray-900">Filters</h3>
+                  <button 
+                    onClick={() => setMobileFiltersOpen(false)}
+                    className="text-gray-400 hover:text-black p-2"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="p-6">
+                  <FilterContent />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
