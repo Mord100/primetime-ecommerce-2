@@ -5,6 +5,9 @@ import { Menu, Transition } from "@headlessui/react"
 import { Link } from "react-router-dom"
 import { ChevronDownIcon } from "@heroicons/react/20/solid"
 import { FaUser, FaHistory, FaSignOutAlt } from "react-icons/fa"
+import { FaRegUser } from "react-icons/fa";
+
+
 import { motion } from "framer-motion"
 
 function classNames(...classes) {
@@ -42,6 +45,25 @@ export function UserDropdown({ logoutHandler, username }) {
             leaveTo="transform opacity-0 scale-95"
           >
             <Menu.Items className="absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none">
+            <div className="py-1">
+                <Menu.Item>
+                  {({ active }) => (
+                    <Link
+                      to="/order-history"
+                      className={classNames(
+                        active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                        "group flex items-center px-4 py-2 text-sm transition-colors duration-150"
+                      )}
+                    >
+                      <FaRegUser className={classNames(
+                        active ? "text-gray-600" : "text-gray-400",
+                        "mr-3 h-5 w-5 transition-colors duration-150"
+                      )} />
+                      Account
+                    </Link>
+                  )}
+                </Menu.Item>
+              </div>
               <div className="py-1">
                 <Menu.Item>
                   {({ active }) => (

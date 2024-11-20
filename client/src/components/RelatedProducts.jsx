@@ -1,212 +1,171 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import { productListAction } from "../Redux/Actions/Product";
-import { IoSearch } from "react-icons/io5";
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronLeft, ChevronRight, Sparkles, ShoppingBag } from 'lucide-react';
 import { TbProgress } from "react-icons/tb";
-import { motion } from "framer-motion";
-import Select from "react-select";
+import LoadingSpinner from './LoadingSpinner';
 
-const Products = () => {
+const CreativeProductCarousel = () => {
   const dispatch = useDispatch();
   const productListReducer = useSelector((state) => state.productListReducer);
   const { loading, error, products = [] } = productListReducer;
-
-  const [selectedBrand, setSelectedBrand] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [selectedCarBrand, setSelectedCarBrand] = useState("All"); // Change initial state to "All"
-  const [selectedCarYear, setSelectedCarYear] = useState("All"); // Change initial state to "All"
+  
+  const [startIndex, setStartIndex] = useState(0);
+  const [hoveredId, setHoveredId] = useState(null);
+  const itemsToShow = 4; // Showing fewer items for larger cards
 
   useEffect(() => {
     dispatch(productListAction());
   }, [dispatch]);
 
-  const filteredProducts = products.filter(
-    (product) =>
-      (selectedBrand ? product.brand === selectedBrand : true) &&
-      (searchTerm
-        ? product.name.toLowerCase().includes(searchTerm.toLowerCase())
-        : true) &&
-      (selectedCategory !== "All"
-        ? product.category === selectedCategory
-        : true) &&
-      (selectedCategory === "Cars" && selectedCarBrand !== "All"
-        ? product.brand === selectedCarBrand
-        : true) && // Update condition for brand
-      (selectedCategory === "Cars" && selectedCarYear !== "All"
-        ? product.yearOfMake === selectedCarYear
-        : true) // Update condition for year
-  );
-
-  const categories = [
-    "All",
-    "Cars",
-    "Farm Commodities",
-    "Electronics",
-    "Stationery",
-    "Real Estates",
-  ];
-
-  // Extract unique brands and years from the products
-  const carBrands = [
-    ...new Set(
-      products
-        .filter((product) => product.category === "Cars")
-        .map((product) => product.brand)
-    ),
-  ]; // Map all car brands
-  const carYears = [
-    ...new Set(
-      products
-        .filter((product) => product.category === "Cars")
-        .map((product) => product.yearOfMake)
-    ),
-  ]; // Map all car years
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
+  const nextSlide = () => {
+    if (startIndex + itemsToShow < products.length) {
+      setStartIndex(startIndex + 1);
+    }
   };
 
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-    },
+  const prevSlide = () => {
+    if (startIndex > 0) {
+      setStartIndex(startIndex - 1);
+    }
   };
 
-  const brandOptions = [
-    { value: "All", label: "All" },
-    ...carBrands.map((brand) => ({ value: brand, label: brand })),
-  ]; // Add "All" option
-  const yearOptions = [
-    { value: "All", label: "All" },
-    ...carYears.map((year) => ({ value: year, label: year })),
-  ]; // Add "All" option
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <LoadingSpinner/>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-16 text-red-500">
+        {error}
+      </div>
+    );
+  }
+
+  if (!products.length) {
+    return null;
+  }
 
   return (
-    <div className="bg-gray-100 min-h-screen">
-      {loading ? (
-        <div className="flex items-center justify-center h-screen">
-          <TbProgress size={40} className="animate-spin mr-3 text-[#f24c1c]" />
-          <span className="text-xl font-semibold text-gray-700">
-            Loading products...
-          </span>
-        </div>
-      ) : error ? (
-        <div className="text-center p-10 text-red-500 text-xl font-semibold">
-          {error}
-        </div>
-      ) : (
-        <section className="py-12 px-4 md:px-12 font-sans">
-          <div className="container mx-auto max-w-7xl">
-            <div className="mb-10 space-y-6">
-              <div>
-                <div className="flex flex-wrap justify-center gap-3">
-                  {categories.map((category) => (
-                    <button
-                      key={category}
-                      className={`px-6 py-3 rounded-lg transition duration-300 text-sm font-medium ${
-                        selectedCategory === category
-                          ? "bg-[#f24c1c] text-white shadow-lg"
-                          : "bg-white text-gray-700 hover:bg-gray-100"
-                      }`}
-                      onClick={() => setSelectedCategory(category)}
-                    >
-                      {category}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {selectedCategory === "Cars" && (
-                <div className="flex flex-col space-y-4 md:flex-row md:justify-between md:space-y-0 border-t pt-5">
-                  <div className="flex flex-col space-y-2">
-                    <h2 className="text-gray-900 font-light text-xl mb-2">
-                      Brand
-                    </h2>
-                    <Select
-                      options={brandOptions}
-                      value={brandOptions.find(
-                        (brand) => brand.value === selectedCarBrand
-                      )}
-                      onChange={(option) => setSelectedCarBrand(option.value)}
-                      className="w-full md:w-64"
-                    />
-                  </div>
-                  <div className="flex flex-col space-y-2">
-                    <h2 className="text-gray-900 font-light text-xl mb-2">
-                      Year of Make
-                    </h2>
-                    <Select
-                      options={yearOptions}
-                      value={yearOptions.find(
-                        (year) => year.value === selectedCarYear
-                      )}
-                      onChange={(option) => setSelectedCarYear(option.value)}
-                      className="w-full md:w-64"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              {filteredProducts.length > 0 ? (
-                filteredProducts.map((product) => (
-                  <motion.div
-                    key={product._id}
-                    className="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 hover:shadow-xl"
-                    variants={itemVariants}
-                  >
-                    <a href={`/products/${product._id}`} className="block">
-                      <div className="aspect-w-1 aspect-h-1 h-64">
-                        <img
-                          alt={`Image of ${product.name}`}
-                          className="w-full h-full object-cover object-center"
-                          src={
-                            product.image && product.image.length > 0
-                              ? product.image[0]
-                              : "fallback-image-url.jpg"
-                          } // Use a fallback image if undefined
-                        />
-                      </div>
-                      <div className="p-6">
-                        <h2 className="text-gray-900 font-semibold text-lg mb-2">
-                          {product.name}
-                        </h2>
-                        <p className="text-gray-600 text-sm mb-3">
-                          {product.brand}
-                        </p>
-                        <span className="text-[#f24c1c] font-bold text-xl">
-                        MWK {product.price ? product.price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : 'N/A'}
-                        </span>
-                      </div>
-                    </a>
-                  </motion.div>
-                ))
-              ) : (
-                <div className="flex items-center w-full justify-center text-center p-10 text-red-500 text-lg mx-auto">
-                  No Items Available
-                </div>
-              )}
-            </motion.div>
+    <div className="py-16">
+      <div className="max-w-7xl mx-auto ">
+        <div className="flex items-center justify-between mb-12">
+          <div className="flex items-center gap-3">
+            <h2 className="text-3xl font-light">
+              Related <span className="text-[#f24c1c] font-medium">Products</span>
+            </h2>
           </div>
-        </section>
-      )}
+          <div className="flex gap-3">
+            <motion.button
+              onClick={prevSlide}
+              disabled={startIndex === 0}
+              className={`p-3 ${startIndex === 0 ? 'bg-gray-100 text-gray-400' : 'bg-white shadow-md hover:shadow-lg text-gray-700'} transition-all duration-200`}
+              whileHover={startIndex > 0 ? { scale: 1.1 } : {}}
+              whileTap={startIndex > 0 ? { scale: 0.9 } : {}}
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </motion.button>
+            <motion.button
+              onClick={nextSlide}
+              disabled={startIndex + itemsToShow >= products.length}
+              className={`p-3 ${startIndex + itemsToShow >= products.length ? 'bg-gray-100 text-gray-400' : 'bg-white shadow-md hover:shadow-lg text-gray-700'} transition-all duration-200`}
+              whileHover={startIndex + itemsToShow < products.length ? { scale: 1.1 } : {}}
+              whileTap={startIndex + itemsToShow < products.length ? { scale: 0.9 } : {}}
+            >
+              <ChevronRight className="w-5 h-5" />
+            </motion.button>
+          </div>
+        </div>
+        
+        <div className="overflow-hidden">
+          <motion.div
+            className="flex gap-6"
+            animate={{
+              x: `-${startIndex * (100 / itemsToShow)}%`
+            }}
+            transition={{ type: "tween", duration: 0.5 }}
+          >
+            {products.map((product) => (
+              <motion.div
+                key={product._id}
+                className="flex-none w-[calc(25%-18px)]"
+                onHoverStart={() => setHoveredId(product._id)}
+                onHoverEnd={() => setHoveredId(null)}
+              >
+                <motion.div
+                  className="relative bg-white"
+                  whileHover={{ y: -8 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <a href={`/products/${product._id}`} className="block">
+                    <div className="relative aspect-[4/5] overflow-hidden">
+                      <img
+                        src={product.image?.[0] || "fallback-image-url.jpg"}
+                        alt={`Image of ${product.name}`}
+                        className="w-full h-full object-cover"
+                      />
+                      <motion.div 
+                        className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: hoveredId === product._id ? 1 : 0 }}
+                        transition={{ duration: 0.3 }}
+                      />
+                    </div>
+                    
+                    <div className="absolute bottom-0 left-0 right-0 p-6">
+                      <motion.div
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ 
+                          y: hoveredId === product._id ? 0 : 20,
+                          opacity: hoveredId === product._id ? 1 : 0
+                        }}
+                        transition={{ duration: 0.3 }}
+                        className="bg-white backdrop-blur-sm p-4 shadow-lg"
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <p className="text-sm font-medium text-[#f24c1c] mb-1">
+                              {product.category}
+                            </p>
+                            <h3 className="text-lg font-medium text-gray-900 leading-tight">
+                              {product.name}
+                            </h3>
+                          </div>
+                          <span className="text-sm font-bold text-[#f24c1c] whitespace-nowrap">
+                            MWK {product.price?.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2
+                            }) || 'N/A'}
+                          </span>
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm text-gray-600">{product.brand}</p>
+                          <motion.button
+                            className="flex items-center gap-2 px-4 py-2 bg-[#f24c1c] text-white rounded-lg text-sm font-medium"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            <ShoppingBag className="w-4 h-4" />
+                            View
+                          </motion.button>
+                        </div>
+                      </motion.div>
+                    </div>
+                  </a>
+                </motion.div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </div>
     </div>
   );
 };
 
-export default Products;
+export default CreativeProductCarousel;
