@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 import PlaceOrder from "./pages/PlaceOrder";
 import OrderConfirmation from "./pages/OrderConfirm";
 import { OrderHistory } from "./pages/OrderHistory";
+import Account from "./pages/Account";
 
 
 function App() {
@@ -38,6 +39,8 @@ function App() {
           ></Route>
           <Route path="/order/:id" element={<OrderConfirmation />} />
           <Route path="/order-history" element={<OrderHistory />} />
+          <Route path="/account" element={<Account/>} />
+
 
           <Route exact path="/checkout" element={<Checkout />}></Route>
           <Route exact path="/placeorder" element={<PlaceOrder />}></Route>

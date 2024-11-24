@@ -49,7 +49,7 @@ export function UserDropdown({ logoutHandler, username }) {
                 <Menu.Item>
                   {({ active }) => (
                     <Link
-                      to="/order-history"
+                      to="/account"
                       className={classNames(
                         active ? "bg-gray-100 text-gray-900" : "text-gray-700",
                         "group flex items-center px-4 py-2 text-sm transition-colors duration-150"
