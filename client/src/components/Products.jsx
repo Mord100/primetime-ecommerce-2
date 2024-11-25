@@ -7,6 +7,10 @@ import Select from "react-select";
 import { CiShop } from "react-icons/ci";
 import { productListAction } from "../Redux/Actions/Product";
 import LoadingSpinner from './LoadingSpinner';
+import { FaGasPump } from "react-icons/fa6";
+import { GiCarWheel } from "react-icons/gi";
+
+
 
 
 const Products = () => {
@@ -130,9 +134,19 @@ const Products = () => {
             <span className="text-sm text-gray-500">{product.yearOfMake}</span>
           </div>
           {viewMode === 'list' && (
-            <p className="text-gray-600 text-sm leading-relaxed mt-4">
-              {product.description || "No description available"}
+            <div className="">
+
+            <p className="text-gray-600 text-sm flex gap-2 items-center leading-relaxed mt-4">
+              <GiCarWheel />
+              {product.mileage || "No model available"} Kilometers
             </p>
+            <p className="text-gray-600 text-sm flex gap-2 items-center leading-relaxed mt-4">
+            <FaGasPump />
+            {product.oil}
+            </p>
+            </div>
+            
+            
           )}
           <div className="flex justify-end mt-auto">
             <button className="text-white bg-gray-900 px-4 py-2 rounded-tl-lg">View</button>

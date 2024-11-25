@@ -220,6 +220,18 @@ function ProductDetail() {
                   <span className="text-gray-500">Category</span>
                   <span>{product.category}</span>
                 </div>
+                <div className="grid grid-cols-2 text-sm">
+                  <span className="text-gray-500">Mileage</span>
+                  <span>Km {product.mileage}</span>
+                </div>
+                <div className="grid grid-cols-2 text-sm">
+                  <span className="text-gray-500">Color</span>
+                  <span>{product.color}</span>
+                </div>
+                <div className="grid grid-cols-2 text-sm">
+                  <span className="text-gray-500">Oil</span>
+                  <span>{product.oil}</span>
+                </div>
               </div>
             </div>
           </div>

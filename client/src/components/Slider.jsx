@@ -24,7 +24,7 @@ const PromoSlider = () => {
   }, []);
 
   return (
-    <div className="relative mx-auto pt-20 bg-white w-[50%]">
+    <div className="relative mx-auto pt-20 bg-white w-full md:w-[50%]">
       <div className="flex items-center justify-center h-12 px-4">
         {/* Left Arrow */}
         <button 
