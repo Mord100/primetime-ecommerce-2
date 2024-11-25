@@ -7,14 +7,13 @@ import { userRegisterAction } from "../../Redux/Actions/User";
 import Layout from "../../Layouts/Layouts";
 import { TbProgress } from "react-icons/tb";
 import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css'; // Import the styles
+import 'react-phone-input-2/lib/style.css';
 
 export default function Register() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [phone, setPhone] = useState("");
   const userRegisterReducer = useSelector((state) => state.userRegisterReducer);
   const { loading, error } = userRegisterReducer;
@@ -22,112 +21,124 @@ export default function Register() {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    dispatch(userRegisterAction(name, email, phone, password)); // Use phone directly
+    dispatch(userRegisterAction(name, email, phone, password));
   };
 
   return (
     <Layout>
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="flex items-center justify-center min-h-screen">
         <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-md p-8 bg-white rounded-2xl shadow-xl"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+          className="w-full max-w-xl p-8 bg-white rounded-2xl border border-neutral-200 shadow-sm"
         >
-          <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">Create Account</h2>
+          <div className="space-y-2 text-center mb-8">
+            <h2 className="text-3xl font-semibold tracking-tight">Create Account</h2>
+            <p className="text-sm text-neutral-500">Enter your details to register</p>
+          </div>
+          
           {loading && (
-            <div className="flex items-center justify-center py-2">
-              <TbProgress size={40} className="animate-spin mr-3 text-[#f24c1c]" />
-              <span className="text-xl font-semibold text-gray-700">Loading...</span>
+            <div className="flex items-center justify-center py-4">
+              <TbProgress size={32} className="animate-spin text-primary mr-3" />
+              <span className="text-neutral-600">Loading...</span>
             </div>
           )}
+          
           {error && (
             <motion.div 
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-red-50 text-red-700 p-4 rounded-lg mb-6" 
-              role="alert"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="bg-red-50 text-red-600 p-3 rounded-lg mb-6 text-center border border-red-200" 
             >
-              <p>{error}</p>
+              {error}
             </motion.div>
           )}
-          <form onSubmit={submitHandler} className="space-y-6">
+          
+          <form onSubmit={submitHandler} className="space-y-4">
             <div className="relative">
-              <FiUser className="absolute top-3 left-3 text-gray-400" />
-              <input
-                type="text"
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
-                placeholder="Full Name"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
+              <label className="block text-sm font-medium text-neutral-700 mb-2">Full Name</label>
+              <div className="relative">
+                <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+                <input
+                  type="text"
+                  className="w-full px-4 py-2 pl-10 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  placeholder="Enter your full name"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
             </div>
+            
             <div className="relative">
-              <FiMail className="absolute top-3 left-3 text-gray-400" />
-              <input
-                type="email"
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
-                placeholder="Email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
+              <label className="block text-sm font-medium text-neutral-700 mb-2">Email</label>
+              <div className="relative">
+                <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+                <input
+                  type="email"
+                  className="w-full px-4 py-2 pl-10 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  placeholder="Enter your email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
             </div>            
+            
             <div className="relative">
+              <label className="block text-sm font-medium text-neutral-700 mb-2">Phone Number</label>
               <PhoneInput
                 country={'mw'} 
                 value={phone}
                 onChange={setPhone}
                 inputStyle={{
-                  width: '90%',
-                  padding: '10px',
-                  border: '1px solid #ccc',
-                  borderRadius: '5px',
-                  marginLeft: '35px',
+                  width: '100%',
+                  padding: '0.5rem 1rem 0.5rem 3rem',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '0.5rem',
+                }}
+                containerStyle={{
+                  marginBottom: '5px',
                 }}
               />
             </div>
+            
             <div className="relative">
-              <FiLock className="absolute top-3 left-3 text-gray-400" />
-              <input
-                type={showPassword ? "text" : "password"}
-                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
-                placeholder="Password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute top-3 right-3 text-gray-400 focus:outline-none"
-              >
-                {showPassword ? <FiEyeOff /> : <FiEye />}
-              </button>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">Password</label>
+              <div className="relative">
+                <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className="w-full px-4 py-2 pl-10 pr-10 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  placeholder="Create a strong password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+                >
+                  {showPassword ? <FiEyeOff /> : <FiEye />}
+                </button>
+              </div>
             </div>
 
-            <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={() => setRememberMe(!rememberMe)}
-                  className="mr-2 focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
-                />
-                Remember me
-              </label>
-              <Link to="/login" className="text-blue-600 hover:underline font-medium">
+            <div className="flex items-center justify-between text-sm text-neutral-600">
+              <Link to="/login" className="text-primary hover:underline">
                 Already have an account?
               </Link>
             </div>
+            
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               type="submit"
-              className="w-full py-3 px-4 bg-[#00315a] hover:bg-opacity-90 text-white font-semibold rounded-lg shadow-md "
+              className="w-full py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
             >
-              Sign Up
+              Create Account
             </motion.button>
           </form>
         </motion.div>
@@ -135,3 +146,11 @@ export default function Register() {
     </Layout>
   );
 }
+
+// Add these Tailwind CSS custom classes
+const customClasses = `
+  .bg-primary { @apply bg-blue-600; }
+  .text-primary { @apply text-blue-600; }
+  .ring-primary { @apply ring-blue-600; }
+  .hover\:bg-primary\/90:hover { @apply bg-blue-700; }
+`;

@@ -8,7 +8,7 @@ const Layout = ({children}) =>{
     return (
         <>
         <Navbar/>
-        <PromoSlider/>
+        {/* <PromoSlider/> */}
         {/* <Hero/> */}
         <main className="font-inter">{children}</main>
         <Footer/>

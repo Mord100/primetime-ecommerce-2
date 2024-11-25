@@ -5,9 +5,18 @@ const PromoSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   
   const promos = [
-    "Up to 60% Off: Use Code ACCESS",
-    "Free Shipping on Orders Over $50",
-    "New Arrivals: Shop the Latest Collection"
+    {
+      text: "Up to 60% Off: Use Code ACCESS",
+      gradient: "from-pink-500 to-purple-500"
+    },
+    {
+      text: "Free Shipping on Orders Over $50", 
+      gradient: "from-blue-500 to-teal-500"
+    },
+    {
+      text: "New Arrivals: Shop the Latest Collection",
+      gradient: "from-green-500 to-emerald-500"
+    }
   ];
 
   const nextSlide = () => {
@@ -24,26 +33,56 @@ const PromoSlider = () => {
   }, []);
 
   return (
-    <div className="relative mx-auto pt-20 bg-white w-full md:w-[50%]">
-      <div className="flex items-center justify-center h-12 px-4">
+    <div className="relative mx-auto my-10 w-full md:w-[50%]">
+      <div 
+        className={`
+          flex items-center justify-center 
+          h-16 px-4 
+          bg-gradient-to-r ${promos[currentSlide].gradient} 
+          text-white 
+          rounded-lg 
+          shadow-lg 
+          transform transition-all 
+          hover:scale-[1.02] 
+          hover:shadow-xl 
+          animate-pulse 
+          relative 
+          overflow-hidden
+        `}
+      >
+        {/* Shine effect */}
+        <div 
+          className="
+            absolute 
+            top-0 
+            left-0 
+            w-full 
+            h-full 
+            bg-white 
+            opacity-20 
+            animate-shine 
+            pointer-events-none
+          "
+        />
+
         {/* Left Arrow */}
         <button 
           onClick={prevSlide}
-          className="absolute left-4 text-red-600 hover:text-gray-900"
+          className="absolute left-4 text-white hover:text-gray-200"
           aria-label="Previous promotion"
         >
           <FaChevronLeft className="w-5 h-5" />
         </button>
 
         {/* Promo Text */}
-        <div className="text-center text-sm font-medium text-gray-900">
-          {promos[currentSlide]}
+        <div className="text-center text-sm font-bold">
+          {promos[currentSlide].text}
         </div>
 
         {/* Right Arrow */}
         <button 
           onClick={nextSlide}
-          className="absolute right-4 text-red-600 hover:text-gray-900"
+          className="absolute right-4 text-white hover:text-gray-200"
           aria-label="Next promotion"
         >
           <FaChevronRight className="w-5 h-5" />
@@ -51,7 +90,7 @@ const PromoSlider = () => {
       </div>
 
       {/* Dots Indicator */}
-      <div className="absolute bottom-1 left-0 right-0 flex justify-center gap-1">
+      <div className="absolute -bottom-6 left-0 right-0 flex justify-center gap-1">
         {promos.map((_, index) => (
           <button
             key={index}
@@ -63,6 +102,17 @@ const PromoSlider = () => {
           />
         ))}
       </div>
+
+      {/* Custom shine animation */}
+      <style jsx>{`
+        @keyframes shine {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        .animate-shine {
+          animation: shine 2s infinite linear;
+        }
+      `}</style>
     </div>
   );
 };

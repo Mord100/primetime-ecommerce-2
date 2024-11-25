@@ -9,6 +9,7 @@ import { productListAction } from "../Redux/Actions/Product";
 import LoadingSpinner from './LoadingSpinner';
 import { FaGasPump } from "react-icons/fa6";
 import { GiCarWheel } from "react-icons/gi";
+import PromoSlider from './Slider';
 
 
 
@@ -61,7 +62,7 @@ const Products = () => {
     "Farm Commodities",
     "Electronics",
     "Stationery",
-    "Real Estates",
+    "Real Estate",
   ];
 
   const carBrands = [
@@ -249,6 +250,7 @@ const Products = () => {
         </div>
       ) : (
         <div className="max-w-screen-2xl mx-auto px-8 py-12">
+          <PromoSlider/>
           {/* Header Section */}
           <div className="mb-12">
             <div className="flex items-baseline justify-between border-b border-gray-200 pb-6">
@@ -310,7 +312,7 @@ const Products = () => {
             {/* Main Content */}
             <div className="flex-grow">
               <div className="flex justify-between items-center mb-8">
-                <h2 className="text-lg font-medium text-gray-900">
+                <h2 className="text-lg font-medium bg-gray-900 p-2 px-3 rounded-sm text-white">
                   {filteredProducts.length} Products
                 </h2>
                 <button
