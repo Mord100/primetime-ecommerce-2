@@ -108,7 +108,7 @@ const Products = () => {
         <div className={`${viewMode === 'list' ? 'w-1/3' : 'w-full'} relative group`}>
           <img
             alt={`Image of ${product.name}`}
-            className="w-full h-72 object-contain object-center transition-transform duration-700 group-hover:scale-105"
+            className="w-full h-50 object-contain object-center rounded-lg  shadow-lg transition-transform duration-700 group-hover:scale-105"
             src={product.image?.[0] || "fallback-image-url.jpg"}
           />
         </div>

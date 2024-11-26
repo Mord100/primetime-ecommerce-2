@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { UserDropdown } from "../components/Dropdown";
+import UserDropdown from "../components/DropDown";
 import { Link } from "react-router-dom";
 import { userLogoutAction } from "../Redux/Actions/User";
 import { LiaShoppingBagSolid } from "react-icons/lia";
@@ -63,6 +63,7 @@ const Navbar = () => {
                   </div>
                 )}
               </button>
+              <span className="text-gray-900">{userInfo.name}</span> {/* Displaying user's name instead of icon */}
               <UserDropdown className="text-gray-900" logoutHandler={logoutHandler} />
               <Checkout open={open} setOpen={setOpen} />
             </>

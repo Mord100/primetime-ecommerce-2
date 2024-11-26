@@ -1,111 +1,121 @@
-"use client"
+import React, { useState, useRef, useEffect } from 'react';
+import { FaRegUser, FaHistory, FaSignOutAlt, FaCog } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
-import { Fragment } from "react"
-import { Menu, Transition } from "@headlessui/react"
-import { Link } from "react-router-dom"
-import { ChevronDownIcon } from "@heroicons/react/20/solid"
-import { FaUser, FaHistory, FaSignOutAlt } from "react-icons/fa"
-import { FaRegUser } from "react-icons/fa";
+const UserDropdown = ({ logoutHandler, username }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
 
-import { motion } from "framer-motion"
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ")
-}
+  // Toggle dropdown
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
 
-export function UserDropdown({ logoutHandler, username }) {
+  // Dropdown menu items
+  const menuItems = [
+    {
+      text: 'Account',
+      to: '/account',
+      className: ' hover:text-blue-700'
+    },
+    {
+      text: 'Order History', 
+      to: '/order-history',
+      className: ' hover:text-green-700'
+    },
+    {
+      text: 'Sign out',
+      onClick: logoutHandler,
+      className: 'hover:bg-red-50 hover:text-red-700 text-red-600'
+    }
+  ];
+
   return (
-    <Menu as="div" className="relative inline-block z-50 font-poppins text-left">
-      {({ open }) => (
-        <>
-          <Menu.Button 
-            as={motion.button}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-700 bg-white transition-colors duration-200"
-          >
-            <FaUser className="h-5 w-5 text-gray-600 rounded-full" />
-            <ChevronDownIcon 
-              className={classNames(
-                "h-5 w-5 text-gray-400 transition-transform duration-200",
-                open ? 'transform rotate-180' : ''
-              )}
-              aria-hidden="true" 
-            />
-          </Menu.Button>
+    <div 
+      ref={dropdownRef} 
+      className="relative inline-block font-poppins"
+    >
+      {/* Dropdown Trigger */}
+      <button 
+        onClick={toggleDropdown}
+        className="flex items-center p-2 rounded-full 
+        hover:bg-gray-100 transition-all duration-200 
+        "
+      >
+        <FaCog className="h-5 w-5 text-gray-600" />
+        <span className="text-sm">{username}</span>
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          viewBox="0 0 24 24" 
+          className={`h-4 w-4 transform transition-transform duration-200 
+            ${isOpen ? 'rotate-180' : ''}`}
+        >
+          <path fill="currentColor" d="M7 10l5 5 5-5z"/>
+        </svg>
+      </button>
 
-          <Transition
-            as={Fragment}
-            enter="transition ease-out duration-200"
-            enterFrom="transform opacity-0 scale-95"
-            enterTo="transform opacity-100 scale-100"
-            leave="transition ease-in duration-150"
-            leaveFrom="transform opacity-100 scale-100"
-            leaveTo="transform opacity-0 scale-95"
-          >
-            <Menu.Items className="absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none">
-            <div className="py-1">
-                <Menu.Item>
-                  {({ active }) => (
-                    <Link
-                      to="/account"
-                      className={classNames(
-                        active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                        "group flex items-center px-4 py-2 text-sm transition-colors duration-150"
-                      )}
-                    >
-                      <FaRegUser className={classNames(
-                        active ? "text-gray-600" : "text-gray-400",
-                        "mr-3 h-5 w-5 transition-colors duration-150"
-                      )} />
-                      Account
-                    </Link>
-                  )}
-                </Menu.Item>
-              </div>
-              <div className="py-1">
-                <Menu.Item>
-                  {({ active }) => (
-                    <Link
-                      to="/order-history"
-                      className={classNames(
-                        active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                        "group flex items-center px-4 py-2 text-sm transition-colors duration-150"
-                      )}
-                    >
-                      <FaHistory className={classNames(
-                        active ? "text-gray-600" : "text-gray-400",
-                        "mr-3 h-5 w-5 transition-colors duration-150"
-                      )} />
-                      Order History
-                    </Link>
-                  )}
-                </Menu.Item>
-              </div>
-              <div className="py-1">
-                <Menu.Item>
-                  {({ active }) => (
-                    <button
-                      onClick={logoutHandler}
-                      className={classNames(
-                        active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                        "group flex w-full items-center px-4 py-2 text-sm transition-colors duration-150"
-                      )}
-                    >
-                      <FaSignOutAlt className={classNames(
-                        active ? "text-red-600" : "text-red-400",
-                        "mr-3 h-5 w-5 transition-colors duration-150"
-                      )} />
-                      Sign out
-                    </button>
-                  )}
-                </Menu.Item>
-              </div>
-            </Menu.Items>
-          </Transition>
-        </>
+      {/* Dropdown Menu */}
+      {isOpen && (
+        <div 
+          className="absolute right-0 mt-2 w-56 bg-white 
+          rounded-md shadow-md border border-gray-100 
+          ring-1 ring-black ring-opacity-5 
+          overflow-hidden animate-dropdown-slide"
+        >
+          {menuItems.map((item, index) => (
+            <React.Fragment key={item.text}>
+              {item.to ? (
+                <Link
+                  to={item.to}
+                  onClick={() => setIsOpen(false)}
+                  className={`flex items-center px-4 py-2.5 text-sm 
+                  text-gray-700 transition-colors duration-150 
+                  group ${item.className}`}
+                >
+                  <span className="mr-3 text-gray-400 group-hover:text-current">
+                    {item.icon}
+                  </span>
+                  {item.text}
+                </Link>
+              ) : (
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    item.onClick();
+                  }}
+                  className={`w-full flex items-center px-4 py-2.5 text-sm 
+                  transition-colors duration-150 text-left 
+                  group ${item.className}`}
+                >
+                  <span className="mr-3 text-gray-400 group-hover:text-current">
+                    {item.icon}
+                  </span>
+                  {item.text}
+                </button>
+              )}
+              {index < menuItems.length - 1 && (
+                <div className="border-t border-gray-100"></div>
+              )}
+            </React.Fragment>
+          ))}
+        </div>
       )}
-    </Menu>
-  )
-}
+    </div>
+  );
+};
+
+export default UserDropdown;
