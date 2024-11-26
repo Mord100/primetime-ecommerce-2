@@ -7,6 +7,8 @@ import { FiX, FiUser, FiMail, FiPhone, FiMapPin, FiDollarSign } from 'react-icon
 import { FaRegIdCard } from "react-icons/fa";
 // import {FiMapPin} from 'react-icons/fi'
 import PhoneInput from "react-phone-input-2";
+import { GrPlan } from "react-icons/gr";
+
 
 const ContractPurchaseModal = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
@@ -170,7 +172,7 @@ const ContractPurchaseModal = ({ isOpen, onClose }) => {
               <div>
                 <label htmlFor="financingOption" className="block text-sm font-medium text-gray-700 mb-1">Financing Option</label>
                 <div className="relative">
-                  <FiDollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <GrPlan className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                   <select 
                     id="financingOption" 
                     name="financingOption" 
@@ -179,11 +181,14 @@ const ContractPurchaseModal = ({ isOpen, onClose }) => {
                     className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out appearance-none"
                     required
                   >
-                    <option value="">Select an option</option>
+                    <option value="">Select a financing option</option>
                     <option value="fullPayment">Full Payment</option>
-                    <option value="12months">12 Months Financing</option>
-                    <option value="24months">24 Months Financing</option>
-                    <option value="36months">36 Months Financing</option>
+                    <option value="1month">1 Month Financing</option>
+                    <option value="2months">2 Months Financing</option>
+                    <option value="3months">3 Months Financing</option>
+                    <option value="4months">4 Months Financing</option>
+                    <option value="5months">5 Months Financing</option>
+                    <option value="6months">6 Months Financing</option>
                   </select>
                 </div>
               </div>

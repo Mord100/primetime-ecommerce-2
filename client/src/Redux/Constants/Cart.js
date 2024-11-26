@@ -18,10 +18,3 @@ export const CART_ITEM_CLEAR = 'CART_ITEM_CLEAR';
 
 // Error handling
 export const CART_ERROR = 'CART_ERROR';
-
-// Loading states
-export const CART_LOADING = 'CART_LOADING';
-export const CART_LOADING_COMPLETE = 'CART_LOADING_COMPLETE';
-
-// Cart totals
-export const UPDATE_CART_TOTALS = 'UPDATE_CART_TOTALS';

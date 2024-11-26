@@ -122,7 +122,7 @@ const Products = () => {
                 {product.category}
               </p>
             </div>
-            <span className="text-gray-900 font-medium">
+            <span className="text-gray-900 font-extrabold">
               MWK {product.price?.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
@@ -286,12 +286,12 @@ const Products = () => {
               <input
                 type="text"
                 placeholder="Search products..."
-                className="w-full py-4 pl-12 pr-4 bg-gray-50 border-0 outline-none text-gray-900 placeholder-gray-500"
+                className="w-full py-4 pl-12 pr-4 bg-red-200 border-0 outline-none text-gray-900 placeholder-white"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <IoSearch
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white"
                 size={20}
               />
             </div>
@@ -312,7 +312,7 @@ const Products = () => {
             {/* Main Content */}
             <div className="flex-grow">
               <div className="flex justify-between items-center mb-8">
-                <h2 className="text-lg font-medium bg-gray-900 p-2 px-3 rounded-sm text-white">
+                <h2 className="text-lg font-medium border-b-2 border-gray-900 text-gray-900">
                   {filteredProducts.length} Products
                 </h2>
                 <button

@@ -41,8 +41,12 @@ const calculateCartTotals = (items) => {
   const itemsCount = items.reduce((total, item) => total + item.qty, 0);
   const subtotal = items.reduce((total, item) => 
     total + (item.productId.price * item.qty), 0);
-  const shipping = subtotal > 100 ? 0 : 10; // Free shipping over $100
-  const tax = subtotal * 0.10; // 10% tax
+  
+  // Shipping logic: Free shipping over 100, else 10
+  const shipping = subtotal > 100 ? 0 : 10;
+  
+  // Tax calculation (10%)
+  const tax = subtotal * 0.10;
   
   return {
     itemsCount,
@@ -54,12 +58,8 @@ const calculateCartTotals = (items) => {
 };
 
 export const cartReducer = (state = initialState, action) => {
-  console.log('Reducer Action:', action.type);
-  console.log('Action Payload:', action.payload);
-
   switch (action.type) {
     case FETCH_CART_ITEMS_REQUEST:
-      console.log('Fetching cart items...');
       return {
         ...state,
         loading: true,
@@ -67,7 +67,6 @@ export const cartReducer = (state = initialState, action) => {
       };
 
     case FETCH_CART_ITEMS_SUCCESS:
-      console.log('Cart Items Fetched:', action.payload);
       return {
         ...state,
         loading: false,
@@ -80,28 +79,8 @@ export const cartReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        cartItems: [],
-        error: action.payload
-      };
-
-    case ADD_ITEM_TO_CART:
-      const item = action.payload;
-      const existItem = state.cartItems.find(x => x._id === item._id);
-      
-      let updatedCartItems;
-      if (existItem) {
-        updatedCartItems = state.cartItems.map(x =>
-          x._id === existItem._id ? item : x
-        );
-      } else {
-        updatedCartItems = [...state.cartItems, item];
-      }
-
-      return {
-        ...state,
-        cartItems: updatedCartItems,
-        cartTotals: calculateCartTotals(updatedCartItems),
-        error: null
+        error: action.payload,
+        cartItems: []
       };
 
     case REMOVE_ITEM_FROM_CART:
@@ -110,17 +89,6 @@ export const cartReducer = (state = initialState, action) => {
         ...state,
         cartItems: filteredItems,
         cartTotals: calculateCartTotals(filteredItems),
-        error: null
-      };
-
-    case UPDATE_CART_ITEM_QUANTITY:
-      const updatedItems = state.cartItems.map(item =>
-        item._id === action.payload._id ? action.payload : item
-      );
-      return {
-        ...state,
-        cartItems: updatedItems,
-        cartTotals: calculateCartTotals(updatedItems),
         error: null
       };
 

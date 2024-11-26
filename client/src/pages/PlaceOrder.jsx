@@ -140,7 +140,7 @@ export default function PlaceOrder() {
   return (
     <Layout>
       <div className="bg-gray-50 min-h-screen py-12">
-        <div className="container mx-auto px-4 sm:px-6 md:px-32">
+        <div className="container mx-auto my-20 px-4 sm:px-6 md:px-32">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

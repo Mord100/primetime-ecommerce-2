@@ -7,6 +7,7 @@ import moment from "moment"
 import Layout from "../Layouts/Layouts"
 import { orderListAction } from "../Redux/Actions/Order"
 import Select from 'react-select';
+import LoadingSpinner from "../components/LoadingSpinner"
 
 export function OrderHistory() {
   const dispatch = useDispatch()
@@ -52,9 +53,9 @@ export function OrderHistory() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="bg-gray-50 min-h-screen py-8 sm:py-12"
+        className="min-h-screen py-8 sm:py-12"
       >
-        <div className="mx-auto px-4 sm:px-6 lg:px-32">
+        <div className="mx-auto px-4 sm:px-6 my-20 lg:px-32">
           <div className="mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
               <h1 className="text-3xl font-bold text-gray-900 mb-4 sm:mb-0">My Orders</h1>
@@ -78,10 +79,7 @@ export function OrderHistory() {
             </div>
 
             {loading ? (
-              <div className="flex items-center justify-center h-64">
-                <TbProgress size={40} className="animate-spin text-[#f24c1c]" />
-                <span className="ml-2 text-xl font-medium text-gray-700">Loading orders...</span>
-              </div>
+              <LoadingSpinner/>
             ) : error ? (
               <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                 <strong className="font-bold">Error!</strong>

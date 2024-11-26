@@ -1,186 +1,154 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams, useLocation } from "react-router-dom";
-import {
-  addToCartAction,
-  removeFromCartAction,
-  fetchCartItemsAction,
-  resetCartAction,
-} from "../Redux/Actions/Cart";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiTrash2, FiMinus, FiPlus } from "react-icons/fi";
+import {
+  removeFromCartAction,
+  fetchCartItemsAction,
+  updateCartItemQuantity,
+} from "../Redux/Actions/Cart";
 
-export default function CartItem() {
+const CartItem = () => {
   const dispatch = useDispatch();
-  const { id: productIdFromParams } = useParams();
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const productIdFromSearch = searchParams.get("productId");
 
-  const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
-  const userId = userInfo?._id;
-
-  const cartItemsByUser = useSelector((state) =>
-    state.cartReducer.cartItems?.filter((item) => item.userId === userId)
-  );
+  // Get user ID and cart data from Redux
+  const userId = useSelector((state) => {
+    const userInfo = state.userLoginReducer?.userInfo;
+    return userInfo?._id;
+  });
 
   const {
     cartItems = [],
     loading = false,
     error = null,
-  } = useSelector((state) => state.cart || {});
+    cartTotals,
+  } = useSelector((state) => state.cartReducer || {});
 
+  // Fetch cart items when component mounts or user changes
   useEffect(() => {
     if (userId) {
-      dispatch(resetCartAction());
       dispatch(fetchCartItemsAction(userId));
     }
   }, [userId, dispatch]);
 
-  const removeFromCartHandler = (productId) => {
-    try {
-      dispatch(removeFromCartAction(userId, productId));
-      // Update local state immediately after removing
-      dispatch(fetchCartItemsAction(userId)); // Fetch updated cart items
-    } catch (error) {
-      console.error("Failed to remove from cart:", error);
+  // Error and loading states
+  if (loading) return <div className="text-center py-4">Loading cart...</div>;
+  if (error)
+    return <div className="text-red-500 text-center py-4">Error: {error}</div>;
+  if (!cartItems.length)
+    return <p className="text-center py-4">Your cart is empty</p>;
+
+  // Cart item removal handler
+  const removeFromCartHandler = (itemId) => {
+    if (userId) {
+      dispatch(removeFromCartAction(userId, itemId));
     }
   };
 
-  const addToCartHandler = (productId, qty) => {
-    try {
-      const validQty = Math.max(1, qty);
-      dispatch(addToCartAction(userId, productId, validQty));
-      // Update local state immediately after adding
-      dispatch(fetchCartItemsAction(userId)); // Fetch updated cart items
-    } catch (error) {
-      console.error("Failed to add to cart:", error);
+  // Quantity update handler with validation
+  const updateQuantityHandler = (itemId, qty, countInStock) => {
+    if (userId) {
+      const validQty = Math.max(1, Math.min(qty, countInStock));
+      dispatch(updateCartItemQuantity(userId, itemId, validQty));
     }
   };
-
-  if (loading) {
-    return <div>Loading cart items...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (!cartItemsByUser || cartItemsByUser.length === 0) {
-    return <p>No items in the cart.</p>;
-  }
 
   return (
-    <div className="mt-8">
-      <div className="flow-root">
-        <ul role="list" className="divide-y divide-gray-200">
-          <AnimatePresence>
-            {cartItemsByUser.map((product) => {
-              const productId = product?.productId?._id; // Use optional chaining
-              const productName = product?.productId?.name || "Unknown Product";
-              const productImage = product?.productId?.image || ""; // Fallback to empty string
-              const productPrice = product?.productId?.price || 0; // Default to 0
-              const productQty = product.qty || 1; // Default to 1 if undefined
+    <div className="container mx-auto px-4 py-8">
+      <h2 className="text-2xl font-bold mb-6">Your Cart</h2>
 
-              return (
-                <motion.li
-                  key={productId} // Use product ID as key
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className="flex py-6 sm:py-10"
+      {/* Cart Items List */}
+      <div className="space-y-4">
+        <AnimatePresence>
+          {cartItems.map((cartItem) => {
+            const product = cartItem.productId;
+            const productId = product._id;
+            const qty = cartItem.qty;
+
+            return (
+              <motion.div
+                key={cartItem._id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                className="flex items-center border-b pb-4"
+              >
+                {/* Product Image */}
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-20 h-20 object-cover mr-4"
+                />
+
+                {/* Product Details */}
+                <div className="flex-grow">
+                  <h3 className="text-lg font-semibold">{product.name}</h3>
+                  <p className="text-gray-600">
+                    MWK {product.price ? product.price.toLocaleString() : "N/A"}
+                  </p>
+                </div>
+
+                {/* Quantity Control */}
+                <div className="flex items-center">
+                  <button
+                    onClick={() =>
+                      updateQuantityHandler(
+                        productId,
+                        qty - 1,
+                        product.countInStock
+                      )
+                    }
+                    className="p-2 bg-gray-200 rounded-l"
+                  >
+                    <FiMinus />
+                  </button>
+                  <input
+                    type="number"
+                    value={qty}
+                    readOnly
+                    className="w-16 text-center border"
+                  />
+                  <button
+                    onClick={() =>
+                      updateQuantityHandler(
+                        productId,
+                        qty + 1,
+                        product.countInStock
+                      )
+                    }
+                    className="p-2 bg-gray-200 rounded-r"
+                  >
+                    <FiPlus />
+                  </button>
+                </div>
+
+                {/* Remove Button */}
+                <button
+                  onClick={() => removeFromCartHandler(productId)}
+                  className="ml-4 text-red-500 hover:text-red-700"
                 >
-                  <div className="h-24 w-24 sm:h-32 sm:w-32 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                    <img
-                      alt={productName}
-                      src={productImage}
-                      className="h-full w-full object-cover object-center"
-                    />
-                  </div>
-
-                  <div className="ml-4 flex flex-1 flex-col justify-between sm:ml-6">
-                    <div className="relative pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0">
-                      <div>
-                        <div className="flex justify-between">
-                          <h3 className="text-sm">
-                            <a
-                              href={`/product/${productId}`}
-                              className="font-medium text-gray-700 hover:text-gray-800"
-                            >
-                              {productName}
-                            </a>
-                          </h3>
-                        </div>
-                        <p className="mt-1 text-sm font-medium text-gray-900">
-                          MWK {productPrice.toLocaleString()}
-                        </p>
-                      </div>
-
-                      <div className="mt-4 sm:mt-0 sm:pr-9">
-                        <label
-                          htmlFor={`quantity-${productId}`}
-                          className="sr-only"
-                        >
-                          Quantity, {productName}
-                        </label>
-                        <div className="flex items-center">
-                          <button
-                            onClick={() =>
-                              addToCartHandler(productId, Math.max(1, productQty - 1))
-                            }
-                            className="p-1 rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                          >
-                            <FiMinus className="h-4 w-4" />
-                          </button>
-                          <input
-                            id={`quantity-${productId}`}
-                            name={`quantity-${productId}`}
-                            value={productQty}
-                            onChange={(e) => {
-                              const newQty = Number(e.target.value);
-                              if (newQty > 0) {
-                                addToCartHandler(productId, newQty);
-                              }
-                            }}
-                            className="mx-2 w-12 rounded border-gray-300 text-center sm:text-sm"
-                            type="number"
-                            min="1" 
-                          />
-                          <button
-                            onClick={() =>
-                              addToCartHandler(productId, Math.min(product.countInStock, productQty + 1))
-                            }
-                            className="p-1 rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                          >
-                            <FiPlus className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mt-4 flex justify-between">
-                      <p className="text-sm text-gray-600">
-                        Subtotal: MWK {(productPrice * productQty).toLocaleString()}
-                      </p>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        type="button"
-                        className="flex items-center text-sm font-medium text-[#f24c1c] hover:text-[#00315a]"
-                        onClick={() => removeFromCartHandler(productId)}
-                      >
-                        <FiTrash2 className="mr-1 h-4 w-4" />
-                        Remove
-                      </motion.button>
-                    </div>
-                  </div>
-                </motion.li>
-              );
-            })}
-          </AnimatePresence>
-        </ul>
+                  <FiTrash2 size={24} />
+                </button>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
       </div>
+
+      {/* Cart Summary */}
+      {cartTotals && (
+        <div className="mt-8 border-t pt-4">
+          <div className="flex justify-between">
+            <span>Subtotal</span>
+            <span>MWK {cartTotals.subtotal.toLocaleString()}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Shipping</span>
+            <span>MWK {cartTotals.shipping.toLocaleString()}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
-}
+};
+export default CartItem;
