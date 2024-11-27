@@ -136,7 +136,7 @@ export default function Register() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
-              className="w-full py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
+              className="w-full py-2 bg-gray-900 text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
             >
               Create Account
             </motion.button>

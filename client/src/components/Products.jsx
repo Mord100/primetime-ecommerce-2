@@ -24,7 +24,7 @@ const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedCarBrand, setSelectedCarBrand] = useState("All");
   const [selectedCarYear, setSelectedCarYear] = useState("All");
-  const [viewMode, setViewMode] = useState('grid');
+  const [viewMode, setViewMode] = useState('list');
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(1000000000);
   const [isFilterOpen, setIsFilterOpen] = useState(true);
@@ -122,7 +122,7 @@ const Products = () => {
                 {product.category}
               </p>
             </div>
-            <span className="text-gray-900 font-extrabold">
+            <span className="text-gray-900 font-mono font-bold">
               MWK {product.price?.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
@@ -137,11 +137,11 @@ const Products = () => {
           {viewMode === 'list' && (
             <div className="">
 
-            <p className="text-gray-600 text-sm flex gap-2 items-center leading-relaxed mt-4">
+            <p className="text-gray-600 bg-green-50 rounded-md p-2 text-sm flex gap-2 items-center leading-relaxed mt-4">
               <GiCarWheel />
               {product.mileage || "No model available"} Kilometers
             </p>
-            <p className="text-gray-600 text-sm flex gap-2 items-center leading-relaxed mt-4">
+            <p className="text-gray-600 bg-blue-50 rounded-md p-2 text-sm flex gap-2 items-center leading-relaxed mt-4">
             <FaGasPump />
             {product.oil}
             </p>
@@ -149,9 +149,9 @@ const Products = () => {
             
             
           )}
-          <div className="flex justify-end mt-auto">
+          {/* <div className="flex justify-end mt-auto">
             <button className="text-white bg-gray-900 px-4 py-2 rounded-tl-lg">View</button>
-          </div>
+          </div> */}
         </div>
       </motion.div>
     </a>

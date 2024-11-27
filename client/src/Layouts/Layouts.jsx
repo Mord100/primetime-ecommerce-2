@@ -10,7 +10,7 @@ const Layout = ({children}) =>{
         <Navbar/>
         {/* <PromoSlider/> */}
         {/* <Hero/> */}
-        <main className="font-inter">{children}</main>
+        <main className="font-montserrat">{children}</main>
         <Footer/>
         </>
     )

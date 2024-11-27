@@ -7,15 +7,16 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-      roboto: ["Roboto", "sans-serif"],
-      poppins: ["Poppins", "sans-serif"],
-      inter: ["Inter", "sans-serif"],
-      bebas: ["Bebas Neue", "sans-serif"],
-
-
+        roboto: ["Roboto", "sans-serif"],
+        poppins: ["Poppins", "sans-serif"],
+        inter: ["Inter", "sans-serif"],
+        bebas: ["Bebas Neue", "sans-serif"],
+        montserrat: ["Montserrat", "sans-serif"],
+        urw: ["URW Geometric Arabic", "sans-serif"],
       },
+    },
   },
   plugins: [
     require('flowbite/plugin')
   ],
-}};
+};
