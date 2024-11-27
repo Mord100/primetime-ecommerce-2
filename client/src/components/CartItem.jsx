@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { motion, AnimatePresence } from "framer-motion";
 import { FiTrash2, FiMinus, FiPlus } from "react-icons/fi";
+import { BsCart2 } from "react-icons/bs";
+
 import {
   removeFromCartAction,
   fetchCartItemsAction,
@@ -10,42 +11,24 @@ import {
 
 const CartItem = () => {
   const dispatch = useDispatch();
+  const userId = useSelector((state) => state.userLoginReducer?.userInfo?._id);
+  const { cartItems = [], loading = false, error = null, cartTotals } = useSelector((state) => state.cartReducer || {});
 
-  // Get user ID and cart data from Redux
-  const userId = useSelector((state) => {
-    const userInfo = state.userLoginReducer?.userInfo;
-    return userInfo?._id;
-  });
-
-  const {
-    cartItems = [],
-    loading = false,
-    error = null,
-    cartTotals,
-  } = useSelector((state) => state.cartReducer || {});
-
-  // Fetch cart items when component mounts or user changes
   useEffect(() => {
-    if (userId) {
-      dispatch(fetchCartItemsAction(userId));
-    }
+    if (userId) dispatch(fetchCartItemsAction(userId));
   }, [userId, dispatch]);
 
-  // Error and loading states
-  if (loading) return <div className="text-center py-4">Loading cart...</div>;
+  if (loading)
+    return <div className="text-center py-8 text-gray-600">Loading cart...</div>;
   if (error)
-    return <div className="text-red-500 text-center py-4">Error: {error}</div>;
+    return <div className="text-red-500 text-center py-8">Error: {error}</div>;
   if (!cartItems.length)
-    return <p className="text-center py-4">Your cart is empty</p>;
+    return <p className="text-center py-8 text-gray-600">Your cart is empty</p>;
 
-  // Cart item removal handler
   const removeFromCartHandler = (itemId) => {
-    if (userId) {
-      dispatch(removeFromCartAction(userId, itemId));
-    }
+    if (userId) dispatch(removeFromCartAction(userId, itemId));
   };
 
-  // Quantity update handler with validation
   const updateQuantityHandler = (itemId, qty, countInStock) => {
     if (userId) {
       const validQty = Math.max(1, Math.min(qty, countInStock));
@@ -54,101 +37,94 @@ const CartItem = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h2 className="text-2xl font-bold mb-6">Your Cart</h2>
+    <div className="container mx-auto px-4 py-12 max-w-5xl">
+      <div className="flex items-center mb-8 space-x-3">
+        <BsCart2 size={30} className="text-gray-600" />
+        <h2 className="text-2xl font-bold text-gray-800">Your Cart</h2>
+      </div>
 
-      {/* Cart Items List */}
-      <div className="space-y-4">
-        <AnimatePresence>
-          {cartItems.map((cartItem) => {
-            const product = cartItem.productId;
-            const productId = product._id;
-            const qty = cartItem.qty;
+      <div className="space-y-6">
+        {cartItems.map((cartItem) => {
+          const product = cartItem.productId;
+          const productId = product._id;
+          const qty = cartItem.qty;
 
-            return (
-              <motion.div
-                key={cartItem._id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                className="flex items-center border-b pb-4"
-              >
-                {/* Product Image */}
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-20 h-20 object-cover mr-4"
-                />
-
-                {/* Product Details */}
-                <div className="flex-grow">
-                  <h3 className="text-lg font-semibold">{product.name}</h3>
-                  <p className="text-gray-600">
-                    MWK {product.price ? product.price.toLocaleString() : "N/A"}
-                  </p>
-                </div>
-
-                {/* Quantity Control */}
-                <div className="flex items-center">
+          return (
+            <div
+              key={cartItem._id}
+              className="flex items-start justify-between p-4 bg-white rounded-lg shadow-sm"
+            >
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-20 h-20 object-cover rounded-md"
+              />
+              <div className="flex-1 ml-4">
+                <h3 className="text-md font-semibold text-gray-800">
+                  {product.name}
+                </h3>
+                <p className="text-gray-600 flex text-sm mt-1">MWK {product.price?.toLocaleString()}</p>
+                <p className="text-sm text-gray-500 mt-2">
+                  <span className="font-medium">Color:</span> {product.color || "N/A"}
+                </p>
+               
+              </div>
+              <div className="flex items-center">
+                <div className="flex items-center mb-2">
                   <button
                     onClick={() =>
-                      updateQuantityHandler(
-                        productId,
-                        qty - 1,
-                        product.countInStock
-                      )
+                      updateQuantityHandler(productId, qty - 1, product.countInStock)
                     }
-                    className="p-2 bg-gray-200 rounded-l"
+                    className="p-1 border rounded-md text-gray-600 hover:bg-gray-100"
                   >
                     <FiMinus />
                   </button>
-                  <input
-                    type="number"
-                    value={qty}
-                    readOnly
-                    className="w-16 text-center border"
-                  />
+                  <span className="mx-2 text-gray-800">{qty}</span>
                   <button
                     onClick={() =>
-                      updateQuantityHandler(
-                        productId,
-                        qty + 1,
-                        product.countInStock
-                      )
+                      updateQuantityHandler(productId, qty + 1, product.countInStock)
                     }
-                    className="p-2 bg-gray-200 rounded-r"
+                    className="p-1 border rounded-md text-gray-600 hover:bg-gray-100"
                   >
                     <FiPlus />
                   </button>
                 </div>
-
-                {/* Remove Button */}
                 <button
                   onClick={() => removeFromCartHandler(productId)}
-                  className="ml-4 text-red-500 hover:text-red-700"
+                  className="text-red-500 mb-1 px-1 hover:text-red-700"
                 >
-                  <FiTrash2 size={24} />
+                  <FiTrash2 size={20} />
                 </button>
-              </motion.div>
-            );
-          })}
-        </AnimatePresence>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Cart Summary */}
       {cartTotals && (
-        <div className="mt-8 border-t pt-4">
-          <div className="flex justify-between">
-            <span>Subtotal</span>
-            <span>MWK {cartTotals.subtotal.toLocaleString()}</span>
+        <div className="mt-8 border-t pt-6 space-y-3">
+          <div className="flex justify-between text-lg">
+            <span className="font-medium text-gray-700">Subtotal</span>
+            <span className="text-gray-800">
+              MWK {cartTotals.subtotal.toLocaleString()}
+            </span>
           </div>
-          <div className="flex justify-between">
-            <span>Shipping</span>
-            <span>MWK {cartTotals.shipping.toLocaleString()}</span>
+          <div className="flex justify-between text-lg">
+            <span className="font-medium text-gray-700">Shipping</span>
+            <span className="text-gray-800">
+              MWK {cartTotals.shipping.toLocaleString()}
+            </span>
+          </div>
+          <div className="flex justify-between text-xl font-bold mt-4">
+            <span>Total</span>
+            <span className="text-green-600">
+              MWK {cartTotals.total.toLocaleString()}
+            </span>
           </div>
         </div>
       )}
     </div>
   );
 };
+
 export default CartItem;
