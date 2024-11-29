@@ -7,12 +7,9 @@ import Select from "react-select";
 import { CiShop } from "react-icons/ci";
 import { productListAction } from "../Redux/Actions/Product";
 import LoadingSpinner from './LoadingSpinner';
-import { FaGasPump } from "react-icons/fa6";
+import { FaGasPump, FaCar, FaTractor, FaLaptop, FaPencilAlt, FaHome } from "react-icons/fa";
 import { GiCarWheel } from "react-icons/gi";
 import PromoSlider from './Slider';
-
-
-
 
 const Products = () => {
   const dispatch = useDispatch();
@@ -57,12 +54,12 @@ const Products = () => {
   );
 
   const categories = [
-    "All",
-    "Cars",
-    "Farm Commodities",
-    "Electronics",
-    "Stationery",
-    "Real Estate",
+    { name: "All", icon: <CiShop /> },
+    { name: "Cars", icon: <FaCar /> },
+    { name: "Farm Commodities", icon: <FaTractor /> },
+    { name: "Electronics", icon: <FaLaptop /> },
+    { name: "Stationery", icon: <FaPencilAlt /> },
+    { name: "Real Estate", icon: <FaHome /> },
   ];
 
   const carBrands = [
@@ -101,7 +98,7 @@ const Products = () => {
     <a href={`/products/${product._id}`}>
       <motion.div
         variants={itemVariants}
-        className={`overflow-hidden transition-all duration-300 ${
+        className={`overflow-hidden border rounded-lg shadow-sm border-gray-50 transition-all duration-300 ${
           viewMode === 'list' ? 'flex' : ''
         }`}
       >
@@ -136,7 +133,6 @@ const Products = () => {
           </div>
           {viewMode === 'list' && (
             <div className="">
-
             <p className="text-gray-600 bg-green-50 rounded-md p-2 text-sm flex gap-2 items-center leading-relaxed mt-4">
               <GiCarWheel />
               {product.mileage || "No model available"} Kilometers
@@ -146,12 +142,7 @@ const Products = () => {
             {product.oil}
             </p>
             </div>
-            
-            
           )}
-          {/* <div className="flex justify-end mt-auto">
-            <button className="text-white bg-gray-900 px-4 py-2 rounded-tl-lg">View</button>
-          </div> */}
         </div>
       </motion.div>
     </a>
@@ -163,15 +154,16 @@ const Products = () => {
         <h3 className="text-base font-medium text-red-600 border-b pb-3 mb-4">Categories</h3>
         {categories.map((category) => (
           <button
-            key={category}
-            className={`block w-full text-left py-2 text-sm transition-colors ${
-              selectedCategory === category
+            key={category.name}
+            className={`flex items-center w-full text-left py-2 text-sm transition-colors ${
+              selectedCategory === category.name
                 ? 'text-black font-medium'
                 : 'text-gray-700 hover:text-black'
             }`}
-            onClick={() => setSelectedCategory(category)}
+            onClick={() => setSelectedCategory(category.name)}
           >
-            {category}
+            <span className="mr-2">{category.icon}</span>
+            {category.name}
           </button>
         ))}
       </div>
@@ -251,7 +243,6 @@ const Products = () => {
       ) : (
         <div className="max-w-screen-2xl mx-auto px-8 py-12">
           <PromoSlider/>
-          {/* Header Section */}
           <div className="mb-12">
             <div className="flex items-baseline justify-between border-b border-gray-200 pb-6">
               <h1 className="text-3xl font-medium text-gray-900">Products</h1>
@@ -280,36 +271,32 @@ const Products = () => {
             </div>
           </div>
 
-          {/* Search Bar */}
           <div className="mb-12">
             <div className="relative">
               <input
                 type="text"
                 placeholder="Search products..."
-                className="w-full py-4 pl-12 pr-4 bg-red-200 border-0 outline-none text-gray-900 placeholder-white"
+                className="w-full py-4 pl-12 pr-4 bg-gray-100 border-0 outline-none text-gray-900 placeholder-gray-300"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <IoSearch
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white"
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 font-bold text-gray-400"
                 size={20}
               />
             </div>
           </div>
 
           <div className="flex gap-12">
-            {/* Sidebar */}
             <div className="hidden md:block w-64 flex-shrink-0">
               <div className="sticky top-8">
                 <div className="flex items-center justify-between mb-8">
                   <h2 className="text-lg font-medium text-gray-900">Filters</h2>
-                  {/* <button className="text-sm text-gray-600 hover:text-black">Clear all</button> */}
                 </div>
                 <FilterContent />
               </div>
             </div>
 
-            {/* Main Content */}
             <div className="flex-grow">
               <div className="flex justify-between items-center mb-8">
                 <h2 className="text-lg font-medium border-b-2 border-gray-900 text-gray-900">
@@ -351,7 +338,6 @@ const Products = () => {
             </div>
           </div>
 
-          {/* Mobile Filters */}
           <div className={`fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity ${mobileFiltersOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
             <div className={`fixed inset-y-0 right-0 w-full max-w-xs bg-white transform transition-transform ${mobileFiltersOpen ? 'translate-x-0' : 'translate-x-full'}`}>
               <div className="h-full overflow-y-auto">
