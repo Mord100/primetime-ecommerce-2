@@ -78,17 +78,22 @@ router.put('/:userId/:itemId', async (req, res) => {
 // Remove item from cart
 router.delete('/:userId/:itemId', async (req, res) => {
   const { userId, itemId } = req.params;
+  console.log('DELETE request received:', { userId, itemId });
 
   try {
+    console.log('Attempting to find and delete cart item...');
     const cartItem = await Cart.findOneAndDelete({ 
       userId, 
       _id: itemId 
     });
+    console.log('Delete operation result:', cartItem);
 
     if (!cartItem) {
+      console.log('Cart item not found');
       return res.status(404).json({ message: 'Cart item not found' });
     }
 
+    console.log('Item removed successfully');
     res.status(200).json({ message: 'Item removed successfully' });
   } catch (error) {
     console.error('Error removing item from cart:', error);

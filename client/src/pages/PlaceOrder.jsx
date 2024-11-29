@@ -8,9 +8,10 @@ import { FiTruck, FiCreditCard, FiShoppingBag } from "react-icons/fi";
 import Layout from "../Layouts/Layouts";
 import CartItem from "../components/CartItem";
 import { BASE_URL } from "../Redux/Constants/BASE_URL";
-import { orderAction, orderPaymentAction } from "../Redux/Actions/Order";
-import { saveShippingAddressAction } from "../Redux/Actions/Cart";
+import { orderAction, payOrder } from "../Redux/Actions/Order";
+import { saveShippingAddressAction, clearCartItems } from "../Redux/Actions/Cart";
 import { ORDER_RESET } from "../Redux/Constants/Order";
+import toast from 'react-hot-toast'; // Import toast
 
 export default function PlaceOrder() {
   const dispatch = useDispatch();
@@ -27,9 +28,25 @@ export default function PlaceOrder() {
   const [postalCode, setPostalCode] = useState(shippingAddress.postalCode || '');
   const [country, setCountry] = useState(shippingAddress.country || '');
 
+  // Format price helper function - handle any input
+  const formatPrice = (price) => {
+    try {
+      if (price === null || price === undefined) {
+        return 0;
+      }
+      if (typeof price === 'string') {
+        return Number(price.replace(/[^0-9.-]+/g, '')) || 0;
+      }
+      return Number(price) || 0;
+    } catch (error) {
+      console.error('Error formatting price:', price, error);
+      return 0;
+    }
+  };
+
   const addDecimal = (num) => (Math.round(num * 100) / 100).toFixed(2);
   const subtotal = addDecimal(cartItems.reduce((total, item) => {
-    const itemPrice = parseFloat(item.productId?.price) || 0; // Ensure item price is a number
+    const itemPrice = formatPrice(item.productId.price); // Ensure item price is a number
     return total + (item.qty * itemPrice);
   }, 0));
   const taxPrice = addDecimal(Number(0.15 * subtotal).toFixed(2));
@@ -50,29 +67,40 @@ export default function PlaceOrder() {
 
     if (success) {
       dispatch({ type: ORDER_RESET });
-      dispatch(orderPaymentAction(order._id, paymentResult));
       navigate(`/order/${order._id}`);
     }
 
-    const script = document.createElement('script');
-    script.src = 'https://in.paychangu.com/js/popup.js';
-    script.async = true;
-    document.body.appendChild(script);
-    
-    script.onload = () => {
-      console.log("Paychangu script loaded successfully");
-    };
-    
-    script.onerror = () => {
-      console.log("Failed to load Paychangu script");
+    // Load jQuery first
+    const jQueryScript = document.createElement('script');
+    jQueryScript.src = 'https://code.jquery.com/jquery-3.6.0.min.js';
+    jQueryScript.async = true;
+    document.body.appendChild(jQueryScript);
+
+    jQueryScript.onload = () => {
+      // After jQuery loads, load Paychangu
+      const paychanguScript = document.createElement('script');
+      paychanguScript.src = 'https://in.paychangu.com/js/popup.js';
+      paychanguScript.async = true;
+      document.body.appendChild(paychanguScript);
+      
+      paychanguScript.onload = () => {
+        console.log("Paychangu script loaded successfully");
+      };
+      
+      paychanguScript.onerror = () => {
+        console.error("Failed to load Paychangu script");
+      };
     };
 
     return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
+      const scripts = document.querySelectorAll('script[src*="paychangu"], script[src*="jquery"]');
+      scripts.forEach(script => {
+        if (document.body.contains(script)) {
+          document.body.removeChild(script);
+        }
+      });
     };
-  }, [dispatch, success, order, paymentResult, navigate]);
+  }, [dispatch, success, order, navigate]);
 
   const successPaymentHandler = async (details) => {
     try {
@@ -97,24 +125,80 @@ export default function PlaceOrder() {
 
   const handlePaychangu = async () => {
     try {
-      const createdOrder = await dispatch(orderAction({
-        orderItems: cartItems,
-        shippingAddress: cart.shippingAddress,
-        totalPrice: total,
+      // Validate shipping address
+      if (!cart.shippingAddress || !cart.shippingAddress.address) {
+        toast.error("Please enter shipping address");
+        return;
+      }
+
+      // Validate cart items
+      if (!cartItems || !Array.isArray(cartItems) || cartItems.length === 0) {
+        toast.error("Your cart is empty");
+        return;
+      }
+
+      // Create shipping address object
+      const shippingAddress = {
+        address: address || cart.shippingAddress.address || '',
+        city: city || cart.shippingAddress.city || '',
+        postalCode: postalCode || cart.shippingAddress.postalCode || '',
+        country: country || cart.shippingAddress.country || ''
+      };
+
+      // Ensure all shipping address fields are filled
+      if (!shippingAddress.address || !shippingAddress.city || 
+          !shippingAddress.postalCode || !shippingAddress.country) {
+        toast.error("Please fill in all shipping address fields");
+        return;
+      }
+
+      // Calculate prices with proper formatting
+      const itemsSubtotal = cartItems.reduce((acc, item) => {
+        const price = formatPrice(item.productId?.price);
+        return acc + (price * (Number(item.qty) || 1));
+      }, 0);
+
+      const calculatedTax = itemsSubtotal * 0.10;
+      const calculatedShipping = itemsSubtotal > 100 ? 0 : 10;
+      const calculatedTotal = itemsSubtotal + calculatedTax + calculatedShipping;
+
+      const orderData = {
+        orderItems: cartItems.map(item => ({
+          productId: {
+            ...item.productId,
+            price: formatPrice(item.productId?.price),
+            image: Array.isArray(item.productId.image) ? item.productId.image[0] : (item.productId.image || '')
+          },
+          qty: Number(item.qty) || 1
+        })),
+        shippingAddress,
         paymentMethod: "paychangu",
-        price: subtotal,
-        taxPrice: taxPrice,
-        shippingPrice: shippingPrice,
-      }));
+        totalPrice: Number(calculatedTotal.toFixed(2)),
+        price: Number(itemsSubtotal.toFixed(2)),
+        taxPrice: Number(calculatedTax.toFixed(2)),
+        shippingPrice: Number(calculatedShipping.toFixed(2))
+      };
+
+      console.log('Sending order data:', orderData);
+
+      const createdOrder = await dispatch(orderAction(orderData));
+
+      if (!createdOrder || !createdOrder._id) {
+        throw new Error("Failed to create order");
+      }
 
       if (typeof window !== 'undefined' && window.PaychanguCheckout) {
+        // Ensure amount is within acceptable range (1-999999)
+        const amount = Math.min(Math.max(calculatedTotal, 1), 999999);
+        const formattedAmount = Number(amount).toFixed(2);
+        
         window.PaychanguCheckout({
           "public_key": "pub-test-JBFl7iideQQSFrZ0YaDFsHGaGquDQJzX",
-          "tx_ref": '' + Math.floor((Math.random() * 1000000000) + 1),
-          "amount": parseFloat(total),
+          "tx_ref": `order_${createdOrder._id}_${Date.now()}`,
+          "amount": formattedAmount,
           "currency": "MWK",
-          "callback_url": `http://localhost:5173/order/${createdOrder._id}`,
-          "return_url": `http://localhost:5173/order/${createdOrder._id}`,
+          "callback_url": `${window.location.origin}/order/${createdOrder._id}`,
+          "return_url": `${window.location.origin}/order/${createdOrder._id}`,
           "customer": {
             "email": "chingolo265@gmail.com",
             "first_name": "Mordecai",
@@ -122,18 +206,47 @@ export default function PlaceOrder() {
           },
           "customization": {
             "title": "Order Payment",
-            "description": "Payment for your order",
+            "description": `Payment for order #${createdOrder._id}`,
           },
           "meta": {
-            "uuid": "uuid",
-            "response": "Response"
+            "orderId": createdOrder._id,
+            "amount": formattedAmount,
+            "currency": "MWK"
+          },
+          "onClose": function() {
+            console.log("Payment window closed");
+          },
+          "onSuccess": async function(response) {
+            try {
+              await dispatch(payOrder(createdOrder._id, {
+                id: response.transaction_id,
+                status: response.status,
+                update_time: new Date().toISOString(),
+                email: response.customer.email
+              }));
+              
+              // Clear cart after successful payment
+              dispatch(clearCartItems());
+              
+              toast.success("Payment successful!");
+              navigate(`/order/${createdOrder._id}`);
+            } catch (error) {
+              console.error("Error updating payment:", error);
+              toast.error("Payment recorded but order update failed. Please contact support.");
+            }
+          },
+          "onError": function(error) {
+            console.error("Payment error:", error);
+            toast.error("Payment failed. Please try again.");
           }
         });
       } else {
-        console.error("PaychanguCheckout is not available");
+        throw new Error("PaychanguCheckout is not available");
       }
     } catch (error) {
       console.error("Error creating order or initiating Paychangu checkout:", error);
+      const errorMessage = error.response?.data?.message || error.message || "Failed to create order";
+      toast.error(errorMessage);
     }
   };
 

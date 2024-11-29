@@ -15,6 +15,7 @@ export const SAVE_PAYMENT_METHOD = 'SAVE_PAYMENT_METHOD';
 // Cart management
 export const RESET_CART = 'RESET_CART';
 export const CART_ITEM_CLEAR = 'CART_ITEM_CLEAR';
+export const CART_CLEAR_ITEMS = 'CART_CLEAR_ITEMS';
 
 // Error handling
 export const CART_ERROR = 'CART_ERROR';

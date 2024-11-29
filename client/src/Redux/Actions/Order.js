@@ -2,21 +2,23 @@ import axios from "axios";
 import {
     ORDER_REQ,
     ORDER_SUCCESS,
-
+    ORDER_FAIL,
 
     ORDER_DETAIL_REQ,
     ORDER_DETAIL_REQ_FAIL,
     ORDER_DETAIL_REQ_SUCCESS,
 
-
     ORDER_PAYMENT_REQ,
     ORDER_PAYMENT_REQ_FAIL,
     ORDER_PAYMENT_REQ_SUCCESS,
 
-
     ORDER_LIST_REQ,
     ORDER_LIST_REQ_FAIL,
-    ORDER_LIST_REQ_SUCCESS
+    ORDER_LIST_REQ_SUCCESS,
+
+    ORDER_PAY_REQ,
+    ORDER_PAY_REQ_SUCCESS,
+    ORDER_PAY_REQ_FAIL
 } from "../Constants/Order"
 import { BASE_URL } from "../Constants/BASE_URL";
 
@@ -93,6 +95,45 @@ export const orderPaymentAction =
         }
     };
 
+// pay order
+export const payOrder = (orderId, paymentResult) => async (dispatch, getState) => {
+    try {
+        dispatch({ type: ORDER_PAY_REQ });
+
+        const {
+            userLogin: { userInfo },
+        } = getState();
+
+        const config = {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${userInfo.token}`,
+            },
+        };
+
+        const { data } = await axios.put(
+            `${BASE_URL}/api/orders/${orderId}/payment`,
+            paymentResult,
+            config
+        );
+
+        dispatch({ type: ORDER_PAY_REQ_SUCCESS, payload: data });
+        return data;
+    } catch (error) {
+        const message =
+            error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message;
+        if (message === "Not authorized, token failed") {
+            dispatch(userLogoutAction());
+        }
+        dispatch({
+            type: ORDER_PAY_REQ_FAIL,
+            payload: message,
+        });
+        throw error;
+    }
+};
 
 //detail req
 

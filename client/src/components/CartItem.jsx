@@ -90,7 +90,7 @@ const CartItem = () => {
                   </button>
                 </div>
                 <button
-                  onClick={() => removeFromCartHandler(productId)}
+                  onClick={() => removeFromCartHandler(cartItem._id)}
                   className="text-red-500 mb-2 px-1 hover:text-red-700"
                 >
                   <FiTrash2 size={20} />

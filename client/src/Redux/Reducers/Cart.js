@@ -8,6 +8,7 @@ import {
   FETCH_CART_ITEMS_FAIL,
   RESET_CART,
   CART_ITEM_CLEAR,
+  CART_CLEAR_ITEMS,
   UPDATE_CART_ITEM_QUANTITY,
   CART_ERROR
 } from '../Constants/Cart';
@@ -92,6 +93,31 @@ export const cartReducer = (state = initialState, action) => {
         error: null
       };
 
+    case ADD_ITEM_TO_CART:
+      const newItem = {
+        productId: action.payload.product,
+        qty: action.payload.qty
+      };
+      const existingItem = state.cartItems.find(x => x.productId._id === action.payload.product._id);
+      
+      let updatedItems;
+      if (existingItem) {
+        updatedItems = state.cartItems.map(item =>
+          item.productId._id === action.payload.product._id
+            ? { ...item, qty: item.qty + action.payload.qty }
+            : item
+        );
+      } else {
+        updatedItems = [...state.cartItems, newItem];
+      }
+      
+      return {
+        ...state,
+        cartItems: updatedItems,
+        cartTotals: calculateCartTotals(updatedItems),
+        error: null
+      };
+
     case CART_SAVE_SHIPPING_ADDRESS:
       return {
         ...state,
@@ -110,8 +136,18 @@ export const cartReducer = (state = initialState, action) => {
       return {
         ...state,
         cartItems: [],
-        cartTotals: calculateCartTotals([]),
-        error: null
+        loading: false,
+        error: null,
+        cartTotals: calculateCartTotals([])
+      };
+
+    case CART_CLEAR_ITEMS:
+      return {
+        ...state,
+        cartItems: [],
+        loading: false,
+        error: null,
+        cartTotals: calculateCartTotals([])
       };
 
     case RESET_CART:

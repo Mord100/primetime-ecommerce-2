@@ -10,7 +10,8 @@ import {
   FETCH_CART_ITEMS_FAIL,
   RESET_CART,
   CART_ITEM_CLEAR,
-  CART_ERROR
+  CART_ERROR,
+  CART_CLEAR_ITEMS
 } from '../Constants/Cart';
 
 import { BASE_URL } from '../Constants/BASE_URL';
@@ -50,10 +51,17 @@ export const fetchCartItemsAction = (userId) => async (dispatch) => {
 // Add item to cart
 export const addToCartAction = (userId, productId, qty, price) => async (dispatch) => {
   try {
-    // Optimistic update
+    // Get current product details from the cart state
+    const product = await axios.get(`${BASE_URL}/api/products/${productId}`);
+    
+    // Optimistic update with full product details
     dispatch({
       type: ADD_ITEM_TO_CART,
-      payload: { productId, qty }
+      payload: { 
+        productId,
+        qty,
+        product: product.data
+      }
     });
 
     const { data } = await axios.post(`${BASE_URL}/api/cart/${userId}`, {
@@ -156,4 +164,10 @@ export const resetCartAction = () => (dispatch) => {
 export const clearCartItems = () => (dispatch) => {
   dispatch({ type: CART_ITEM_CLEAR });
   localStorage.removeItem('cartItems');
+};
+
+// Clear cart
+export const clearCart = () => (dispatch) => {
+  dispatch({ type: CART_ITEM_CLEAR });
+  localStorage.removeItem("cartItems");
 };
