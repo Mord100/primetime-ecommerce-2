@@ -258,7 +258,7 @@ export default function PlaceOrder() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-white shadow-2xl rounded-lg overflow-hidden"
+            className="bg-white border shadow-sm rounded-lg overflow-hidden"
           >
             <div className="md:flex">
               <div className="md:w-1/2 p-8">

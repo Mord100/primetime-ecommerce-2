@@ -99,17 +99,17 @@ const Products = () => {
       <motion.div
         variants={itemVariants}
         className={`overflow-hidden border rounded-lg shadow-sm border-gray-50 transition-all duration-300 ${
-          viewMode === 'list' ? 'flex' : ''
+          viewMode === 'list' && window.innerWidth > 768 ? 'flex' : ''
         }`}
       >
-        <div className={`${viewMode === 'list' ? 'w-1/3' : 'w-full'} relative group`}>
+        <div className={`${viewMode === 'list' && window.innerWidth > 768 ? 'w-1/3' : 'w-full'} relative group`}>
           <img
             alt={`Image of ${product.name}`}
             className="w-full h-50 object-contain object-center rounded-lg  shadow-lg transition-transform duration-700 group-hover:scale-105"
             src={product.image?.[0] || "fallback-image-url.jpg"}
           />
         </div>
-        <div className={`pt-4 ${viewMode === 'list' ? 'w-2/3 px-8' : 'w-full'}`}>
+        <div className={`pt-4 p-4 ${viewMode === 'list' && window.innerWidth > 768 ? 'w-2/3 px-8' : 'w-full'}`}>
           <div className="flex justify-between items-start mb-1">
             <div className="flex-grow">
               <h2 className="text-lg text-red-600 font-medium hover:text-gray-700 transition-colors">
@@ -241,7 +241,7 @@ const Products = () => {
           {error}
         </div>
       ) : (
-        <div className="max-w-screen-2xl mx-auto px-8 py-12">
+        <div className="max-w-screen-2xl mx-auto py-12">
           <PromoSlider/>
           <div className="mb-12">
             <div className="flex items-baseline justify-between border-b border-gray-200 pb-6">

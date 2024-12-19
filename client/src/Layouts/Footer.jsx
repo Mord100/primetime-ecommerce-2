@@ -25,7 +25,7 @@ const Footer = () => {
 
   return (
     <footer className="md:px-32 px-4 pb-8 border-gray-300">
-      <div className="max-w-7xl py-16 border-t mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+      <div className="max-w-7xl py-16 border-t mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
         <Category
           title="Primetime Limited"
           links={['']}
