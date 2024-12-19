@@ -138,7 +138,7 @@ const ContractPurchaseModal = ({ isOpen, onClose }) => {
               <div>
                 <label
                   htmlFor="idCardImage"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-gray-700 mb-2"
                 >
                   National ID Card Image
                 </label>
@@ -149,9 +149,15 @@ const ContractPurchaseModal = ({ isOpen, onClose }) => {
                     id="idCardImage"
                     name="idCardImage"
                     onChange={handleImageChange}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+                    className="hidden" // Hide the default file input
                     required
                   />
+                  <label
+                    htmlFor="idCardImage" // Link the label to the file input
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out cursor-pointer"
+                  >
+                    {formData.idCardImage ? "File Selected" : "Choose File"} {/* Custom text */}
+                  </label>
                 </div>
               </div>
               <div>
